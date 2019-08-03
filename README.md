@@ -95,5 +95,6 @@ Preferably 45 degrees to each other
 # Pick place mechanism:
 ![pick _ place mechanism](https://user-images.githubusercontent.com/47322496/62413940-0a113d00-b633-11e9-9877-88df0f6ef3be.PNG)
 
-# Timlines:
+# Timelines:
 ![Untitled Diagram (1)-1](https://user-images.githubusercontent.com/47322496/62414016-2497e600-b634-11e9-9666-7d36d3a648e8.png)
+![Untitled Diagram](https://user-images.githubusercontent.com/47322496/62417208-e1f00100-b667-11e9-8989-ebc56053f965.jpg)

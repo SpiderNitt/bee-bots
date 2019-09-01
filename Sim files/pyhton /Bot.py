@@ -4,22 +4,38 @@ import Controller
 
 class bot():
     
-    def __init__(self,pos=[0,0,0],lmvelocity=0,rmvelocity=0):
-        self.x=pos[0]
-        self.y=pos[1]
-        self.z=pos[2]
+    def __init__(self,lmvelocity=0,rmvelocity=0):
         self.lmvelocity=lmvelocity
         self.rmvelocity=rmvelocity
-        fun.position(pos)
+        self.Get_postiton()
         fun.velocity(rmvelocity,lmvelocity)
+        self.path={}
+        self.pos={}
+        self.objectPicked=0
     
-    def get_path(self,path=[2.5,2.5,0.02]):
+    def get_path(self,path=[2.5,2.5,0.0]):
         self.path=fun.path(path)
         return path
     
     def Follow_path(self,path):
-        Controller.followpath(path)
-     
+        Controller.followpath(path,self.objectPicked)
+        self.Get_postiton()
+    
+    def Get_postiton(self):
+        self.pos=fun.Get_position()
+    
+    def pick(self):
+        self.objectPicked=fun.pick()
+        
+    
+    def place(self):
+        if self.objectPicked==0:
+            print("noting to place")
+        else:
+            fun.place(self.objectPicked)
+            self.objectPicked=0
+        
+		
 		
 
 
@@ -54,7 +70,10 @@ class pid():
 	
 if __name__ == '__main__':
     	
-    ebot1=bot([-1,-1,0.02],1,1)
-    ebot1.Follow_path([1.0,1.0,0.0])
+    ebot1=bot(0,0)
+    ebot1.pick()
+    ebot1.Follow_path([0.5,1.5,0.0])
+    ebot1.place()
+    #ebot1.Follow_path([0,0,0])
 		
 	

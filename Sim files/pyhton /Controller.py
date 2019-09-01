@@ -5,7 +5,7 @@ from time import sleep
 import sys
 import ctypes
 
-def followpath(path):
+def followpath(path,objectHandle):
     vrep.simxFinish(-1) 
     clientID=vrep.simxStart('127.0.0.1',19999,True,True,5000,5) 
     if clientID!=-1:
@@ -48,5 +48,9 @@ def followpath(path):
                     _=vrep.simxSetJointTargetVelocity(clientID,lm,0,vrep.simx_opmode_oneshot_wait)
                     _=vrep.simxSetJointTargetVelocity(clientID,rm,0,vrep.simx_opmode_oneshot_wait) 
                     break
+                
+                if(objectHandle):
+                    _=vrep.simxSetObjectPosition(clientID,objectHandle,ebot,[0,0,0.052],vrep.simx_opmode_oneshot_wait)
+                
                 
                 

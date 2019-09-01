@@ -1,27 +1,24 @@
 
 import fun
+import Controller
 
 class bot():
-	
-	def __init__(self,pos=[0,0,0],lmvelocity=0,rmvelocity=0):
-		self.x=pos[0]
-		self.y=pos[1]
-		self.z=pos[2]
-		self.lmvelocity=lmvelocity
-		self.rmvelocity=rmvelocity
-  
-		fun.position(pos)
-		fun.velocity(rmvelocity,lmvelocity)
-     
-	def get_path(self,path=[2.5,2.5,0]):
-     		self.path=fun.path(path)
-	
- 	#def get_path(self,path=[2.5,2.5]):
-		 #self.path=fun.path(path)
-		
-	
-	#def Follow_path(self,path):
-		
+    
+    def __init__(self,pos=[0,0,0],lmvelocity=0,rmvelocity=0):
+        self.x=pos[0]
+        self.y=pos[1]
+        self.z=pos[2]
+        self.lmvelocity=lmvelocity
+        self.rmvelocity=rmvelocity
+        fun.position(pos)
+        fun.velocity(rmvelocity,lmvelocity)
+    
+    def get_path(self,path=[2.5,2.5,0.02]):
+        self.path=fun.path(path)
+        return path
+    
+    def Follow_path(self,path):
+        Controller.followpath(path)
      
 		
 
@@ -57,7 +54,7 @@ class pid():
 	
 if __name__ == '__main__':
     	
-    ebot1=bot([])
-    ebot1.get_path([2.5,2.5,0])
+    ebot1=bot([-1,-1,0.02],1,1)
+    ebot1.Follow_path([1.0,1.0,0.0])
 		
 	

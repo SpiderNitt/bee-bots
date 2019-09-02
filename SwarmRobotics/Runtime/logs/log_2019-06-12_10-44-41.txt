@@ -1,5 +1,0 @@
-W | 10:44:31 AM | MAIN           | Loading scene MainForaging
-W | 10:44:31 AM | CONFIG         | Ignoring ground length from config (25.0) because of NavMesh
-D | 10:44:31 AM | MAIN           | Created Resources header object
-D | 10:44:41 AM | FILE-UTILITIES | Successfully created directory "Runtime/logs/"
-D | 10:44:41 AM | LOG            | Writing log to Runtime/logs/log_2019-06-12_10-44-41.txt

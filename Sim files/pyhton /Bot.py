@@ -18,6 +18,7 @@ class bot():
         return path
     
     def Follow_path(self,path):
+        self.Get_postiton()
         Controller.followpath(path,self.objectPicked)
         self.Get_postiton()
     
@@ -71,9 +72,9 @@ class pid():
 if __name__ == '__main__':
     	
     ebot1=bot(0,0)
-    ebot1.pick()
-    ebot1.Follow_path([0.5,1.5,0.0])
-    ebot1.place()
+    #ebot1.pick()
+    ebot1.Follow_path([0.5,2,0.0])
+    #ebot1.place()
     #ebot1.Follow_path([0,0,0])
 		
 	

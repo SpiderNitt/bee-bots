@@ -17,6 +17,7 @@ def followpath(path,objectHandle):
             dis=0
             path_pos={}
             flag=0
+            x=0
             
             _,robotHandle=vrep.simxGetObjectHandle(clientID,'Start',vrep.simx_opmode_oneshot_wait)  
             _,targetHandle=vrep.simxGetObjectHandle(clientID,'End',vrep.simx_opmode_oneshot_wait)
@@ -33,10 +34,11 @@ def followpath(path,objectHandle):
             while(1):
                 
                 if (time.time()-prev_time)>1:
-                   retFloats=path_5_sec(clientID,path)
-                   sleep(0.2)
-                   pos_on_path=1
-                   prev_time=time.time()
+                   if (not flag) :
+                        retFloats=path_5_sec(clientID,path)
+                        sleep(0.1)
+                        pos_on_path=1
+                        prev_time=time.time()
                    
                    
                 emptyBuff=bytearray()   
@@ -55,23 +57,29 @@ def followpath(path,objectHandle):
                 _=vrep.simxSetJointTargetVelocity(clientID,rm,(-1*omega_right),vrep.simx_opmode_oneshot_wait) 
                 
                 if(dis[0]<0.1):
-                    pos_on_path+=3  
+                    pos_on_path+=3 
+                
+                if(flag==1):
+                    if (math.sqrt((path[0]-retFloats[pos_on_path-1])**2+(path[1]-retFloats[pos_on_path])**2)<0.01):
+                        _=vrep.simxSetJointTargetVelocity(clientID,lm,0,vrep.simx_opmode_oneshot_wait)
+                        _=vrep.simxSetJointTargetVelocity(clientID,rm,0,vrep.simx_opmode_oneshot_wait) 
+                        print("exit")
+                        x=1
+                        break
+                
+                if(x==1):
+                    break 
                 
                 
                 print(math.sqrt((path[0]-retFloats[pos_on_path-1])**2+(path[1]-retFloats[pos_on_path])**2))
-                if(math.sqrt((path[0]-retFloats[pos_on_path])**2+(path[1]-retFloats[pos_on_path])**2)<0.3):
-                    print("SDFSD")
-                    _=vrep.simxSetJointTargetVelocity(clientID,lm,0,vrep.simx_opmode_oneshot_wait)
-                    _=vrep.simxSetJointTargetVelocity(clientID,rm,0,vrep.simx_opmode_oneshot_wait) 
+                if(math.sqrt((path[0]-retFloats[pos_on_path-1])**2+(path[1]-retFloats[pos_on_path])**2)<0.5):
                     flag=1
-                    break
+                    
                 
                 if(objectHandle):
                     _=vrep.simxSetObjectPosition(clientID,objectHandle,ebot,[0,0,0.052],vrep.simx_opmode_oneshot_wait)
                 
-                if(flag==1):
-                    print("exit")
-                    break
+                
 def path_5_sec(clientID,path):
         
         pos_on_path=1

@@ -3,9 +3,9 @@ import math
 import sys
 import ctypes
 
-def path(endpath):
+def path(endpath,port):
     vrep.simxFinish(-1)                                                                    
-    clientID=vrep.simxStart('127.0.0.1',19999,True,True,5000,5)                            
+    clientID=vrep.simxStart('127.0.0.1',port,True,True,5000,5)                            
     if clientID!=-1:
         emptyBuff = bytearray()
         
@@ -13,28 +13,28 @@ def path(endpath):
 
     return path
 
-def Get_position():
+def Get_position(port):
     
                 vrep.simxFinish(-1) 
-                clientID=vrep.simxStart('127.0.0.1',19999,True,True,5000,5) 
+                clientID=vrep.simxStart('127.0.0.1',port,True,True,5000,5) 
                 if clientID!=-1:
                         _,ebot=vrep.simxGetObjectHandle(clientID,'eBot',vrep.simx_opmode_oneshot_wait)
                         _,pos=vrep.simxGetObjectPosition(clientID,ebot,-1,vrep.simx_opmode_oneshot_wait)
                         return pos         
 
-def velocity(lmvelocity,rmvelocity):
+def velocity(lmvelocity,rmvelocity,port):
     
     vrep.simxFinish(-1) 
-    clientID=vrep.simxStart('127.0.0.1',19999,True,True,5000,5) 
+    clientID=vrep.simxStart('127.0.0.1',port,True,True,5000,5) 
     if clientID!=-1:
         _,lm=vrep.simxGetObjectHandle(clientID,'LeftJoint',vrep.simx_opmode_oneshot_wait)
         _,rm=vrep.simxGetObjectHandle(clientID,'RightJoint',vrep.simx_opmode_oneshot_wait)
         _=vrep.simxSetJointTargetVelocity(clientID,lm,lmvelocity,vrep.simx_opmode_oneshot_wait)
         _=vrep.simxSetJointTargetVelocity(clientID,rm,rmvelocity,vrep.simx_opmode_oneshot_wait) 
         
-def pick():
+def pick(port):
         vrep.simxFinish(-1)
-        clientID=vrep.simxStart('127.0.0.1',19999,True,True,5000,5)
+        clientID=vrep.simxStart('127.0.0.1',port,True,True,5000,5)
         if clientID!=-1:
                 _,ps=vrep.simxGetObjectHandle(clientID,'ProximitySensor',vrep.simx_opmode_oneshot_wait)
                 _,detectionState,detectionPoint,detectionObjectHandle,_=vrep.simxReadProximitySensor(clientID,ps,vrep.simx_opmode_oneshot_wait)
@@ -47,9 +47,9 @@ def pick():
                         print("not able to pick any block")
                         return 0
 
-def place(objecthandle):
+def place(objecthandle,port):
         vrep.simxFinish(-1)
-        clientID=vrep.simxStart('127.0.0.1',19999,True,True,5000,5)
+        clientID=vrep.simxStart('127.0.0.1',port,True,True,5000,5)
         if clientID!=-1:
                 _,ps=vrep.simxGetObjectHandle(clientID,'ProximitySensor',vrep.simx_opmode_oneshot_wait) 
                 _=vrep.simxSetObjectPosition(clientID,objecthandle,ps,[0,0.3,0.2],vrep.simx_opmode_oneshot_wait)      

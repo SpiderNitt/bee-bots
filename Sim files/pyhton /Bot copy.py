@@ -73,12 +73,10 @@ class pid():
 	
 if __name__ == '__main__':
     	
-   
-    ebot1=bot(19999,0,0)
-    ebot1.pick()
-    ebot1.Follow_path([0.5,2,0.0])
-    ebot1.place()
-
+    ebot2=bot(20000,0,0)
+    ebot2.pick()
+    ebot2.Follow_path([0.5,2,0.0])
+    ebot2.place()
    
 		
 	

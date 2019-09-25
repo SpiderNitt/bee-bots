@@ -1,0 +1,26 @@
+#include <Servo.h>
+
+Servo s;  
+int initial_pos = 0;  
+int final_pos = 180;  
+int magnet_state = 0;
+
+void setup() {
+  s.attach(9);
+  s.write(initial_pos);
+}
+
+void loop() {
+    magnet_state = digitalRead(10);
+
+    if(magnet_state ==1)
+    {
+    s.write(final_pos);              
+    delay(15);  
+    }
+    else if(magnet_state ==0)
+    {
+    s.write(initial_pos);              
+    delay(15);  
+    }
+}

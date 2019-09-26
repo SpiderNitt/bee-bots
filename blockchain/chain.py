@@ -38,6 +38,9 @@ class BlockChain:
 
                 print("Block with index " + str(len(self.blocks)) + " added")
 
+    def get_block(self):
+        return self.blocks[len(self.blocks) - 1].data
+
     def verify(self):
         flag = True
         for i in range(1, len(self.blocks)):
@@ -54,11 +57,3 @@ class BlockChain:
                 flag = False
         return flag
 
-
-chain = BlockChain()
-chain.add_block("356")
-
-
-
-print("length of chain? ", len(chain.blocks))
-print(chain.blocks[len(chain.blocks) - 1].hash)

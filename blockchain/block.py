@@ -27,7 +27,7 @@ class Block:
         key.update(str(self.pow).encode("utf-8"))
         return key.hexdigest()
 
-    def proof_of_work(self, puzzle_bits=16, time_limit=10.0):
+    def proof_of_work(self, puzzle_bits=4, time_limit=10.0):
         my_timer = threading.Timer(time_limit, self.mytimer)
         my_timer.start()
         for i in range(pow(2, 256)):
@@ -39,7 +39,7 @@ class Block:
                 m.update(str(self.previous_hash).encode("utf-8"))
                 m.update(str(i).encode("utf-8"))
                 string = m.hexdigest()
-                if string[0:5] == "00000":
+                if string[0:1] == "0":
                     print("hit hit hit for", i)
                     my_timer.cancel()
                     return i

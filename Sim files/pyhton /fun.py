@@ -13,6 +13,14 @@ def path(endpath,port):
 
     return path
 
+def get_object_handle(port,object):
+                vrep.simxFinish(-1) 
+                clientID=vrep.simxStart('127.0.0.1',port,True,True,5000,5) 
+                if clientID!=-1:
+                        _,handle=vrep.simxGetObjectHandle(clientID,object,vrep.simx_opmode_oneshot_wait)
+                        return handle
+        
+
 def Get_position(port):
     
                 vrep.simxFinish(-1) 
@@ -53,4 +61,12 @@ def place(objecthandle,port):
         if clientID!=-1:
                 _,ps=vrep.simxGetObjectHandle(clientID,'ProximitySensor',vrep.simx_opmode_oneshot_wait) 
                 _=vrep.simxSetObjectPosition(clientID,objecthandle,ps,[0,0.3,0.2],vrep.simx_opmode_oneshot_wait)      
-                        
+
+
+def place_block(port,objecthandle,position):
+        vrep.simxFinish(-1)
+        clientID=vrep.simxStart('127.0.0.1',port,True,True,5000,5)
+        if clientID!=-1:
+                print("kept")
+                handle=get_object_handle(port,'Cuboid12')
+                _=vrep.simxSetObjectPosition(clientID,handle,-1,position,vrep.simx_opmode_oneshot_wait)                        

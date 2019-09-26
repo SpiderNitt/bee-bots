@@ -2,12 +2,13 @@
 import fun
 import Controller
 
+
+
 class bot():
     
     def __init__(self,port,lmvelocity=0,rmvelocity=0):
         self.lmvelocity=lmvelocity
         self.rmvelocity=rmvelocity
-        
         fun.velocity(rmvelocity,lmvelocity,port)
         self.path={}
         self.pos={}
@@ -29,6 +30,9 @@ class bot():
     
     def pick(self):
         self.objectPicked=fun.pick(self.port)
+    
+    def place_from_other_sceme(self,objectHandle,pos):
+        fun.place_block(self.port,objectHandle,pos)
         
     
     def place(self):
@@ -78,6 +82,8 @@ if __name__ == '__main__':
     ebot1.pick()
     ebot1.Follow_path([0.5,2,0.0])
     ebot1.place()
+    ebot1.Follow_path([0.25,1,0])
+    ebot1.place_from_other_sceme(21,[0.5,2,0.0])
 
    
 		

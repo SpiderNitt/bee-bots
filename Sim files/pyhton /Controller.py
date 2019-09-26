@@ -24,6 +24,7 @@ def followpath(path,objectHandle,port):
             _,lm=vrep.simxGetObjectHandle(clientID,'LeftJoint',vrep.simx_opmode_oneshot_wait)
             _,rm=vrep.simxGetObjectHandle(clientID,'RightJoint',vrep.simx_opmode_oneshot_wait)
             _,ebot=vrep.simxGetObjectHandle(clientID,'eBot',vrep.simx_opmode_oneshot_wait)
+            _,picksubs=vrep.simxGetObjectHandle(clientID,'Cuboid14',vrep.simx_opmode_oneshot_wait)
 
             
             
@@ -72,12 +73,12 @@ def followpath(path,objectHandle,port):
                 
                 
                 print(math.sqrt((path[0]-retFloats[pos_on_path-1])**2+(path[1]-retFloats[pos_on_path])**2))
-                if(math.sqrt((path[0]-retFloats[pos_on_path-1])**2+(path[1]-retFloats[pos_on_path])**2)<0.5):
+                if(math.sqrt((path[0]-retFloats[pos_on_path-1])**2+(path[1]-retFloats[pos_on_path])**2)<0.3):
                     flag=1
                     
                 
                 if(objectHandle):
-                    _=vrep.simxSetObjectPosition(clientID,objectHandle,ebot,[0,0,0.052],vrep.simx_opmode_oneshot_wait)
+                    _=vrep.simxSetObjectPosition(clientID,picksubs,ebot,[0,0,0.052],vrep.simx_opmode_oneshot_wait)
                 
                 
 def path_5_sec(clientID,path):

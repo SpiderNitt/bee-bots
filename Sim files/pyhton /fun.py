@@ -59,7 +59,9 @@ def place(objecthandle,port):
         vrep.simxFinish(-1)
         clientID=vrep.simxStart('127.0.0.1',port,True,True,5000,5)
         if clientID!=-1:
-                _,ps=vrep.simxGetObjectHandle(clientID,'ProximitySensor',vrep.simx_opmode_oneshot_wait) 
+                _,ps=vrep.simxGetObjectHandle(clientID,'ProximitySensor',vrep.simx_opmode_oneshot_wait)
+                _,picksubs=vrep.simxGetObjectHandle(clientID,'Cuboid14',vrep.simx_opmode_oneshot_wait)
+                _=vrep.simxSetObjectPosition(clientID,picksubs,-1,[-2,-2,0],vrep.simx_opmode_oneshot_wait) 
                 _=vrep.simxSetObjectPosition(clientID,objecthandle,ps,[0,0.3,0.2],vrep.simx_opmode_oneshot_wait)      
 
 

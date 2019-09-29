@@ -32,11 +32,10 @@ if __name__ == "__main__":
 
 map1 = {
     "block_data": [
-        {"block_id": 123, "current_coordinates": 123, "final_coordinates": 123}
+        {"id": 123, "curr_x": 123,"curr_y"=123, "final_coordinates": 123,"status" : "picked", "owner_bot_id":123}
     ],
     "bot_data": [
-        {"bot_id": 123, "block_id": 123, "current_coordinates": 123, "state": True}
+        {"id": 123, "block_id": 123, "curr_x": 123,"curr_y":123}
     ],
     "total_blocks": 1234,
 }
-

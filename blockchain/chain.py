@@ -1,7 +1,7 @@
 from block import Block
 import datetime
 import copy
-
+import json
 
 class BlockChain:
     def __init__(self):
@@ -39,7 +39,7 @@ class BlockChain:
                 print("Block with index " + str(len(self.blocks)) + " added")
 
     def get_block(self):
-        return self.blocks[len(self.blocks) - 1].data
+        return self.blocks[len(self.blocks) - 1].toJSON()
 
     def verify(self):
         flag = True
@@ -56,4 +56,3 @@ class BlockChain:
             if self.blocks[i - 1].timestamp >= self.blocks[i].timestamp:
                 flag = False
         return flag
-

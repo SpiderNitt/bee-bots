@@ -1,6 +1,6 @@
 import hashlib
 import threading
-
+import jsonpickle
 
 class Block:
     def __init__(self, index, timestamp, data, previous_hash):
@@ -47,4 +47,5 @@ class Block:
             else:
                 print("timed out. -1 returned")
                 return -1
-
+    def toJSON(self):
+        return jsonpickle.encode(self)

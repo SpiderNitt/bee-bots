@@ -24,18 +24,15 @@ class BlockChain:
             data,
             self.blocks[len(self.blocks) - 1].hash,
         )
-        if block.pow == -1:
-            print("proof of work timed out. block wont be inserted. bye bye")
+        if block.pos == False:
+            print("proof of stake invalid. block wont be inserted")
         else:
             self.blocks.append(block)
             flag = self.verify()
             if not flag:
-                print("thiere is a conflict with the block. aborting!!!")
+                print("there is a conflict with the block. aborting!")
                 self.blocks = self.blocks[0 : len(self.blocks - 1)]
-
             else:
-                # print("this is the correct length: ", len(self.blocks))
-
                 print("Block with index " + str(len(self.blocks)) + " added")
 
     def get_block(self):

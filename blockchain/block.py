@@ -1,6 +1,9 @@
 import hashlib
 import threading
 import jsonpickle
+import numpy as np
+
+stakes = []
 
 class Block:
     def __init__(self, index, timestamp, data, previous_hash):
@@ -10,9 +13,9 @@ class Block:
         self.data = data
         self.previous_hash = previous_hash
         if index == 0:
-            self.pow = 0
+            self.pos = False
         else:
-            self.pow = self.proof_of_work()
+            self.pos = self.proof_of_stake(stakes)
         self.hash = self.hashing()
 
     def mytimer(self, time_limit=10.0):
@@ -26,6 +29,16 @@ class Block:
         key.update(str(self.previous_hash).encode("utf-8"))
         key.update(str(self.pow).encode("utf-8"))
         return key.hexdigest()
+
+    def voting(self):
+        np.random.shuffle(stakes)
+        consesus = 0
+        for i in range(0,len(stakes)/2):
+            consesus = consesus+stakes[i]
+        if consesus >= majority_vote:
+            return True
+        else
+            return False
 
     def proof_of_work(self, puzzle_bits=4, time_limit=10.0):
         my_timer = threading.Timer(time_limit, self.mytimer)
@@ -47,5 +60,6 @@ class Block:
             else:
                 print("timed out. -1 returned")
                 return -1
+
     def toJSON(self):
         return jsonpickle.encode(self)

@@ -13,5 +13,5 @@ async def main():
 start_server = websockets.serve(main, "localhost", 8765)
 print("running")
 asyncio.get_event_loop().run_until_complete(start_server)
-%queryBlockChain repeatedly after set interval of time
+# query BlockChain repeatedly after set interval of time
 asyncio.get_event_loop().run_forever()

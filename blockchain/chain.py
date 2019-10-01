@@ -53,3 +53,13 @@ class BlockChain:
             if self.blocks[i - 1].timestamp >= self.blocks[i].timestamp:
                 flag = False
         return flag
+
+"""map = {
+ "block_data": [
+        {"id": 123, "curr_x": 123,"curr_y"=123, "final_coordinates": 123,"status" : "picked", "owner_bot_id":123}
+    ],
+    "bot_data": [
+        {"id": 123, "block_id": 123, "curr_x": 123,"curr_y":123}
+    ],
+    "total_blocks": 1234,
+}"""

@@ -1,0 +1,7 @@
+#ifndef CONFIG_H_INCLUDED
+#define CONFIG_H_INCLUDED
+
+#define BUILD_GIT_VERSION "40a9188"
+#define BUILD_DATE __DATE__ " (git " BUILD_GIT_VERSION ")"
+
+#endif // CONFIG_H_INCLUDED

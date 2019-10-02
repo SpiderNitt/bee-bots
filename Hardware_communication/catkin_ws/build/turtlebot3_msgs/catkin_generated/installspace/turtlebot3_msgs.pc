@@ -1,0 +1,8 @@
+prefix=/home/karthik/catkin_ws/install
+
+Name: turtlebot3_msgs
+Description: Description of turtlebot3_msgs
+Version: 1.0.0
+Cflags: -I/home/karthik/catkin_ws/install/include
+Libs: -L/home/karthik/catkin_ws/install/lib 
+Requires: std_msgs message_runtime

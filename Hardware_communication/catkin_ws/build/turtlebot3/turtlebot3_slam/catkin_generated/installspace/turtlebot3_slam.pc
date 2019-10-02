@@ -1,0 +1,8 @@
+prefix=/home/karthik/catkin_ws/install
+
+Name: turtlebot3_slam
+Description: Description of turtlebot3_slam
+Version: 1.2.1
+Cflags: -I/home/karthik/catkin_ws/install/include
+Libs: -L/home/karthik/catkin_ws/install/lib 
+Requires: roscpp sensor_msgs

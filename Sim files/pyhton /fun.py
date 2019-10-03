@@ -66,3 +66,12 @@ def place_block(port,objecthandle,position):
             print("kept")
             handle=get_object_handle(port,'Cuboid12')
             _=vrep.simxSetObjectPosition(clientID,handle,-1,position,vrep.simx_opmode_oneshot_wait)
+
+def send_to_ros(port,path):
+    vrep.simxFinish(-1)
+    clientID=vrep.simxStart('127.0.0.1',port,True,True,5000,5)
+    if clientID!=-1:
+        emptyBuff=bytearray()
+        _,_,retFloats,_,_=vrep.simxCallScriptFunction(clientID,'Dummy',vrep.sim_scripttype_childscript,'threadFunction',[],path,[],emptyBuff,vrep.simx_opmode_oneshot_wait)
+        x=len(retFloats)
+        _,_,_,_,_=vrep.simxCallScriptFunction(clientID,'Dummy',vrep.sim_scripttype_childscript,'publishRos',[x],retFloats,[],emptyBuff,vrep.simx_opmode_oneshot_wait)

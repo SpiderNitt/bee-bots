@@ -1,8 +1,0 @@
-prefix=/home/karthik/catkin_ws/devel
-
-Name: vrep_skeleton_msg_and_srv
-Description: Description of vrep_skeleton_msg_and_srv
-Version: 3.4.0
-Cflags: -I/home/karthik/catkin_ws/devel/include
-Libs: -L/home/karthik/catkin_ws/devel/lib 
-Requires: message_runtime

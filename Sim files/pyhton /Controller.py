@@ -37,7 +37,7 @@ def followpath(path,objectHandle,port):
                     prev_time=time.time()
 
             emptyBuff=bytearray()
-            _,_,_,_,_=vrep.simxCallScriptFunction(clientID,'Dummy',vrep.sim_scripttype_childscript,'',[pos_on_path],retFloats,[],emptyBuff,vrep.simx_opmode_blocking)
+            _,_,dis,_,_=vrep.simxCallScriptFunction(clientID,'Dummy',vrep.sim_scripttype_childscript,'follow',[pos_on_path],retFloats,[],emptyBuff,vrep.simx_opmode_blocking)
 
             v_des = -0.05
             om_des = -0.8*dis[1]
@@ -48,7 +48,7 @@ def followpath(path,objectHandle,port):
             omega_right=(v_r/r_w)
             omega_left=(v_l/r_w)
             
-             _,_,_,_,_=vrep.simxCallScriptFunction(clientID,'Dummy',vrep.sim_scripttype_childscript,'veloctiyRos',[],[omega_right,omega_right],[],emptyBuff,vrep.simx_opmode_blocking)
+            _,_,_,_,_=vrep.simxCallScriptFunction(clientID,'Dummy',vrep.sim_scripttype_childscript,'veloctiyRos',[],[omega_right,omega_right],[],emptyBuff,vrep.simx_opmode_blocking)
             _=vrep.simxSetJointTargetVelocity(clientID,lm,(-1*omega_left),vrep.simx_opmode_oneshot_wait)
             _=vrep.simxSetJointTargetVelocity(clientID,rm,(-1*omega_right),vrep.simx_opmode_oneshot_wait)
 

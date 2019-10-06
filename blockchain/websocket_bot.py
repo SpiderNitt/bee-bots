@@ -5,6 +5,7 @@ import requests
 from chain import BlockChain
 from block import Block
 import time
+from sklearn.cluster import DBSCAN
 
 chain = BlockChain()
 thisbot = Block()
@@ -20,6 +21,31 @@ def queryBlockChain():
     JSONresponse = jsonpickle.decode(response)
     plotBots(JSONresponse)
     plotBlocks(JSONresponse)
+
+def euclidean_dist(c1,c2):
+    delta_x = c1[0]-c2[0]
+    delta_y = c1[1]-c2[1]
+    return (delta_x**2+delta_y**2)**(.5)
+
+def dbscan(input_dict,eps = 0.3, min_samples =3, metric="euclidean"):
+    db = DBCAN(eps,min_samples,metric).fit(input_matrix)
+    mask = np.zeros_like(db.labels_, dtype = bool)
+    mask[db.core_samples_indices_] = True
+    labels = db.labels_
+    cluster_means={}
+    for i in set(labels):
+        for j in labels:
+            if i==j:
+                #cluster_means stored as key tuple pair
+
+    return cluster_means,labels
+
+    n_clusters = len(set(labels))-(1 if -1 in labels else 0)
+    n_noise = list(labels).count(-1)
+    """
+    Metrics like --> homogeniety, completeness,silhouette can be measured
+    # The required cluster labels can be availed by using set(labels)
+    """
 
 
 def plotBots(info):
@@ -48,7 +74,21 @@ def updateBlockChain(self, previous_query):
             curr_bot_data = id
             break
 # update the value of coordinates which is obtained from simulation
+def chooseTargetCluster(self,cluster_means ,labels):
+    dist = sys.maxint
+    chosenLabel = sys.maxint
+    for point in cluster_means:
+        curr_dist = euclidean_dist(self.coordinates,point[1])
+        if dist>curr_dist:
+            chosenLabel = point[0]
+    # choose cluster label corresponding to the cluster with min mean diistance
+    return chosenLabel
 
+
+def chooseTargetBlock(self,chosenLabel,labels):
+    #choose closest block from chosen cluster
+def overlappingClusters:
+    #this function will jump in case of and solve overlappingcluster problem
 async def main(websocket, path):
     uri = "ws://localhost:8765"
     async with websockets.connect(uri) as websocket:

@@ -1,8 +1,0 @@
-prefix=/home/karthik/catkin_ws/install
-
-Name: beebots_getpath
-Description: Description of beebots_getpath
-Version: 0.0.0
-Cflags: 
-Libs: -L/home/karthik/catkin_ws/install/lib 
-Requires: 

@@ -1,3 +1,6 @@
+
+#!/usr/bin/env python
+
 #constants
 #Scene object types. Values are serialized
 sim_object_shape_type           =0

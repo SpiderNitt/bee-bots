@@ -25,4 +25,4 @@ class scene:
             print(self.obstacles_handles,self.obstacles_initpos)
 
 if __name__ == '__main__':
-    a=scene(19999)
+    a=scene(20000)

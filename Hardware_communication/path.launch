@@ -1,0 +1,9 @@
+
+<launch>
+<arg name="end"  default="[2.0, 2.0, 0]"/>
+<node pkg="beebots_getpath" name="path" type="emulator.py" output="screen"> 
+<rosparam param="end" subst_value="True">$(arg end)</rosparam>
+
+</node>
+
+</launch>

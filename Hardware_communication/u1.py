@@ -7,7 +7,6 @@ GPIO.setmode(GPIO.BCM)                     #Set GPIO pin numbering
 
 TRIG1 = 26                              
 ECHO1 = 21                            
-print "Distance measurement in progress"
 
 def dist():
 	GPIO.setup(TRIG1,GPIO.OUT)                  #Set pin as GPIO out	
@@ -15,7 +14,7 @@ def dist():
 
 	while True:
 	  GPIO.output(TRIG1, False)                 #Set TRIG as LOW
-	  print "Waitng For Sensor To Settle"
+	  print "Waitng For Sensor1 To Settle"
 	  time.sleep(2)                             #Delay of 2 seconds
 
 	  GPIO.output(TRIG1, True)                  #Set TRIG as HIGH
@@ -48,7 +47,8 @@ def publish(ultra1):
 
 if __name__ == '__main__':
     try:
-        ultra1 = dist()
-        publish(ultra1)
+	while True:
+		ultra1 = dist()
+	        publish(ultra1)
     except rospy.ROSInterruptException:
         pass

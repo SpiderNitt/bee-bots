@@ -7,7 +7,6 @@ GPIO.setmode(GPIO.BCM)                     #Set GPIO pin numbering
 
 TRIG2 = 19                              
 ECHO2 = 20                            
-print "Distance measurement in progress"
 
 def dist():
 	GPIO.setup(TRIG2,GPIO.OUT)                  #Set pin as GPIO out	
@@ -15,7 +14,7 @@ def dist():
 
 	while True:
 	  GPIO.output(TRIG2, False)                 #Set TRIG as LOW
-	  print "Waitng For Sensor To Settle"
+	  print "Waitng For Sensor2 To Settle"
 	  time.sleep(2)                             #Delay of 2 seconds
 
 	  GPIO.output(TRIG2, True)                  #Set TRIG as HIGH

@@ -7,7 +7,6 @@ GPIO.setmode(GPIO.BCM)                     #Set GPIO pin numbering
 
 TRIG4 = 06                              
 ECHO4 = 12                          
-print "Distance measurement in progress"
 
 def dist():
 	GPIO.setup(TRIG4,GPIO.OUT)                  #Set pin as GPIO out	
@@ -15,7 +14,7 @@ def dist():
 
 	while True:
 	  GPIO.output(TRIG4, False)                 #Set TRIG as LOW
-	  print "Waitng For Sensor To Settle"
+	  print "Waitng For Sensor4 To Settle"
 	  time.sleep(2)                             #Delay of 2 seconds
 
 	  GPIO.output(TRIG4, True)                  #Set TRIG as HIGH
@@ -25,7 +24,7 @@ def dist():
 	  while GPIO.input(ECHO4)==0:               #Check whether the ECHO is LOW
 	    pulse_start4 = time.time()              #Saves the last known time of LOW pulse
 
-	  while GPIO.input(ECHO3)==1:               #Check whether the ECHO is HIGH
+	  while GPIO.input(ECHO4)==1:               #Check whether the ECHO is HIGH
 	    pulse_end4 = time.time()                #Saves the last known time of HIGH pulse 
 
 	  pulse_duration4 = pulse_end4 - pulse_start4  #Get pulse duration to a variable

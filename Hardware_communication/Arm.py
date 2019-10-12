@@ -33,13 +33,17 @@ def listener():
 
 
 def pick():
+	GPIO.output(40, True)	#switching on magnet
+	time.sleep(2)		#sleep 2 seconds
         p.ChangeDutyCycle(12.5) # turn towards 180 degree
         time.sleep(1) # sleep 1 second 
 
 def place():
-
         p.ChangeDutyCycle(2.5)  # turn towards 0 degree
         time.sleep(1) # sleep 1 second
+	GPIO.output(40, False)	#switching off magnet
+	time.sleep(2)		#sleep 2 seconds
+
 
 if __name__ == '__main__':
     

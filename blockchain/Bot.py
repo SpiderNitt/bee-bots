@@ -20,14 +20,13 @@ The static parameters
 """
 
 states = {
-    "IDLE":"idle",
-    "PLACED": "placed",  
+    "IDLE": "idle",
+    "PLACED": "placed",
     "PICKED": "picked",
     "DROPPED": "dropped",
     "BEGIN": "begin",
     "MOVING": "moving",
-    "END":"end"
-
+    "END": "end",
 }
 # * computes euclideian distance between two points
 def euclidean_dist(c1, c2):
@@ -41,7 +40,27 @@ def spit_weighted_number(length):
     for i in range(1, length + 1):
         random_array.append([i] * (length + 1 - i))
     flattened = [item for sublist in random_array for item in sublist]
-    return random.choice(flattened) 
+    return random.choice(flattened)
+
+
+# * gives info about bots that idle
+def plotBots(info):
+    bot_data = info.data["bot_data"]
+    toplot = []
+    for bot in bot_data:
+        if bot["id"] != thisbot.id:
+            toplot.append([bot["curr_x"], bot[curr_y]])
+    return toplot
+
+
+# * returns an array of with coordinates of blocks which are yet to be picked`
+def plotBlocks(info):
+    block_data = info.data["block_data"]
+    toplot = []
+    for block in block_data:
+        if block["status"] != "picked":
+            toplot.append([block["curr_x"], block["curr_y"]])
+    return toplot
 
 
 class Bot:
@@ -60,33 +79,12 @@ class Bot:
     def get_coordinates_from_vrep(self):
         pass
 
-    # ! What is this?
-    def plotBots(info):
-        bot_data = info.data["bot_data"]
-        toplot = []
-        for bot in bot_data:
-            if bot["id"] != thisbot.id:
-                toplot.append([bot["curr_x"], bot[curr_y]])
-        return toplot
-
-       
-
-    # ! What is this?
-    def plotBlocks(info):
-        block_data = info.data["block_data"]
-        toplot = []
-        for block in block_data:
-            if block["status"] != "picked":
-                toplot.append([block["curr_x"], block["curr_y"]])
-        return toplot
-    #* returns an array of with coordinates of blocks which are yet to be picked`
-
     # * query the blockchain and obtains the map as json data
     def queryBlockChain(self):
         response = chain.get_block()
-        JSONresponse = jsonpickle.decode(response)
-        plotBots(JSONresponse)
-        plotBlocks(JSONresponse)
+        # JSONresponse = jsonpickle.decode(response)
+        # plotBots(JSONresponse)
+        # plotBlocks(JSONresponse)
         return response
 
     # * Comparator -> Sorts coordinatse based on least distance from bots cordinates
@@ -151,14 +149,7 @@ class Bot:
         block = self.get_kth_closest_block(k)
         return block
 
-    def move_to_block(self):
-        # self.status = states["MOVING"]
-        self.update_blockchain(block["id"], states["BUSY"])
-            return True
-        return False
-
     # * pick_block if threshold error is less than given threshold
-    # ! THRESHOLD MUSR BE DECIDED
     def state_block_check(self, state=states["MOVING"], threshold=0.1):
         if state == states["MOVING"]:
             block_coords = self.block.current
@@ -173,18 +164,18 @@ class Bot:
         self.update_blockchain(self.block["id"], states["PICKED"])
 
     def goto_destination(self):
-      pass
+        pass
 
     def is_block_pickable(self):
-      latest_block = self.queryBlockChain()
-      block = latest_block['block_data'][self.block['id']]
-      if block['status'] == status["DROPPED"] or  block['status']== status["IDLE"]:
-          return True
-      return False
+        latest_block = self.queryBlockChain()
+        block = latest_block["block_data"][self.block["id"]]
+        if block["status"] == status["DROPPED"] or block["status"] == status["IDLE"]:
+            return True
+        return False
 
     def place_block(self):
         self.update_blockchain(states["PLACED"])
-        self.status = states["LOOKING"]
+        # self.status = states["LOOKING"]
         # block_coords = latest_block["block_data"][block_id].final
 
     def chooseTargetBlock(self, chosenLabel, labels):
@@ -192,35 +183,29 @@ class Bot:
 
     # choose closest block from chosen cluster
     def infinite_loop(self):
-      self.state = states["BEGIN"]
-      while self.state !=states['END']:
-        self.block = self.choose_block()
-        if block==None:
-          self.state=states["END"]
-          break
-        else:
-          self.state = states["MOVING"]
-          while not self.state_block_check(states["MOVING"],0.5):
-              pass
-          if self.is_block_pickable():
-            self.state = states["PICKED"]
-            self.pick_block()
-            while not self.state_block_check(states["PICKED"], 0.5):
-              pass
+        self.state = states["BEGIN"]
+        while self.state != states["END"]:
+            self.block = self.choose_block()
+            if block == None:
+                self.state = states["END"]
+                break
+            else:
+                self.state = states["MOVING"]
+                while not self.state_block_check(states["MOVING"], 0.5):
+                    pass
+                if self.is_block_pickable():
+                    self.state = states["PICKED"]
+                    self.pick_block()
+                    while not self.state_block_check(states["PICKED"], 0.5):
+                        pass
+                    self.state = states["PLACED"]
+                    self.place_block()
+                    self.state = states["BEGIN"]
+                    continue
 
-          else:
-            self.state = states["BEGIN"]
-            continue
-
-          
-        
-
-
-
-
-
-      
-
+                else:
+                    self.state = states["BEGIN"]
+                    continue
 
 
 # def overlappingClusters:

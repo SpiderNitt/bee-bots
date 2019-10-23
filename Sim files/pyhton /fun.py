@@ -75,3 +75,23 @@ def send_to_ros(port,path):
         _,_,retFloats,_,_=vrep.simxCallScriptFunction(clientID,'Dummy',vrep.sim_scripttype_childscript,'threadFunction',[],path,[],emptyBuff,vrep.simx_opmode_oneshot_wait)
         x=len(retFloats)
         _,_,_,_,_=vrep.simxCallScriptFunction(clientID,'Dummy',vrep.sim_scripttype_childscript,'publishRos',[x],retFloats,[],emptyBuff,vrep.simx_opmode_oneshot_wait)
+
+
+def stop_function(port):
+    vrep.simxFinish(-1)
+    clientID=vrep.simxStart('127.0.0.1',port,True,True,5000,5)
+    if clientID!=-1:
+        _,ps=vrep.simxGetObjectHandle(clientID,'ProximitySensor',vrep.simx_opmode_oneshot_wait)
+        _,detectionState,detectionPoint,detectionObjectHandle,_=vrep.simxReadProximitySensor(clientID,ps,vrep.simx_opmode_oneshot_wait)
+        _,ps1=vrep.simxGetObjectHandle(clientID,'ProximitySensor1',vrep.simx_opmode_oneshot_wait)
+        _,detectionState1,detectionPoint1,detectionObjectHandle1,_=vrep.simxReadProximitySensor(clientID,ps1,vrep.simx_opmode_oneshot_wait)
+        _,ps2=vrep.simxGetObjectHandle(clientID,'ProximitySensor2',vrep.simx_opmode_oneshot_wait)
+        _,detectionState2,detectionPoint2,detectionObjectHandle2,_=vrep.simxReadProximitySensor(clientID,ps2,vrep.simx_opmode_oneshot_wait)
+        dis = math.sqrt(detectionPoint[0]**2+detectionPoint[1]**2+detectionPoint[2]**2)
+        dis1= math.sqrt(detectionPoint1[0]**2+detectionPoint1[1]**2+detectionPoint1[2]**2)
+        dis2= math.sqrt(detectionPoint2[0]**2+detectionPoint2[1]**2+detectionPoint2[2]**2)
+        if (detectionObjectHandle == 40) or (detectionObjectHandle1 == 40) or (detectionObjectHandle2 == 40) :
+                return [dis,dis1,dis2]
+        else:
+                return [100,100,100]
+       

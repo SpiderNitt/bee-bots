@@ -16,7 +16,7 @@ float  set_speed1 =90.0 ,set_speed2 = 90.0;
 float  current_speed1 = 0,current_speed2 = 0;
 
 /*PID Tuned Parameters For M1 and M2 */
-float Kp1 = 0.465 , Ki1 = 0 ,Kd1 = 0.002;                         //  M1 : Kp1 = 0.465 Kd = 0.002 sufficient to set speeds between 75 to 130 rpm . ki tuning required
+float Kp1 = 0.525 , Ki1 = 0 ,Kd1 = 0.002;                         //  M1 : Kp1 = 0.465 Kd = 0.002 sufficient to set speeds between 75 to 130 rpm . ki tuning required
 float Kp2 = 0.435 , Ki2 =0  ,Kd2 = 0.002;                         //  M2 : Kp2 = 0.435 Kd = 0.002 sufficient to set speeds between 75 to 120 rpm . ki tuning required 
 int a=0;                                                                                           
 

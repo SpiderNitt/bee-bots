@@ -3,7 +3,9 @@ import threading
 import jsonpickle
 import numpy as np
 
-stakes = []
+stakes = [10, 10, 10, 10, 10]
+majority_vote = sum(stakes) / len(stakes)
+
 
 class Block:
     def __init__(self, index, timestamp, data, previous_hash):
@@ -27,17 +29,18 @@ class Block:
         key.update(str(self.timestamp).encode("utf-8"))
         key.update(str(self.data).encode("utf-8"))
         key.update(str(self.previous_hash).encode("utf-8"))
-        key.update(str(self.pow).encode("utf-8"))
+        key.update(str(self.pos).encode("utf-8"))
         return key.hexdigest()
 
+    # * whether the bot thinks it should update
     def voting(self):
         np.random.shuffle(stakes)
         consesus = 0
-        for i in range(0,len(stakes)/2):
-            consesus = consesus+stakes[i]
+        for i in range(0, len(stakes) / 2):
+            consesus = consesus + stakes[i]
         if consesus >= majority_vote:
             return True
-        else
+        else:
             return False
 
     def proof_of_work(self, puzzle_bits=4, time_limit=10.0):

@@ -2,8 +2,8 @@ import asyncio
 import websockets
 import jsonpickle
 import requests
-from chain import BlockChain
-from block import Block
+from .chain import BlockChain
+from .block import Block
 import time
 from sklearn.cluster import DBSCAN
 import sys
@@ -11,8 +11,6 @@ import numpy as np
 import random
 
 chain = BlockChain()
-thisbot.id = "Bot1"
-
 
 """
 The static parameters
@@ -64,10 +62,13 @@ def plotBlocks(info):
 
 
 class Bot:
-    def __init__(self, coordinates, bot_id):
+    def __init__(self, my_port, known_ports):
 
         # ! DO THIS
         self.coordinates = self.get_coordinates_from_vrep()
+        self.port = my_port
+        known_ports.discard(my_port)
+        self.other_ports = known_ports
 
         # ! INSTEAD OF THIS
         self.coordinates = {"x": -0.024999968707561493, "y": 0.04999999701976776}
@@ -210,6 +211,8 @@ class Bot:
 
 # def overlappingClusters:
 # this function will jump in case of and solve overlappingcluster problem
+
+
 async def main(websocket, path):
     uri = "ws://localhost:8765"
     async with websockets.connect(uri) as websocket:

@@ -1,7 +1,8 @@
-from block import Block
+from .block import Block
 import datetime
 import copy
 import json
+
 
 class BlockChain:
     def __init__(self):
@@ -53,6 +54,7 @@ class BlockChain:
             if self.blocks[i - 1].timestamp >= self.blocks[i].timestamp:
                 flag = False
         return flag
+
 
 """map = {
  "block_data": [

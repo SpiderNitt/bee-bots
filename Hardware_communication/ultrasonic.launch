@@ -1,0 +1,16 @@
+
+<launch>
+
+<node pkg="pi_control" name="u1" type="u1.py" output="screen"> 
+</node>
+
+<node pkg="pi_control" name="u2" type="u2.py" output="screen"> 
+</node>
+
+<node pkg="pi_control" name="u3" type="u3.py" output="screen"> 
+</node>
+
+<node pkg="pi_control" name="u4" type="u4.py" output="screen"> 
+</node>
+
+</launch>

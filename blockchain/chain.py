@@ -39,6 +39,9 @@ class BlockChain:
     def get_block(self):
         return self.blocks[len(self.blocks) - 1].toJSON()
 
+    def get_chain_length(self):
+        return self.blocks[len(self.blocks)]
+
     def verify(self):
         flag = True
         for i in range(1, len(self.blocks)):

@@ -11,12 +11,24 @@ def spit_weighted_number(length):
     # return flattened
 
 
-score_dict = defaultdict(int)
-for i in range(10000):
-    val = spit_weighted_number(5)
-    score_dict[val] += 1
-    # score_dict[val].update()
 
-# array = spit_weighted_number(5)
-for i in sorted(score_dict.keys()):
-    print(i, score_dict[i])
+
+
+
+string = "hello"
+import threading
+def hello_world():
+  print("hi")
+  score_dict = defaultdict(int)
+  for i in range(10000):
+      val = spit_weighted_number(5)
+      score_dict[val] += 1
+      # score_dict[val].update()
+
+  # array = spit_weighted_number(5)
+  for i in sorted(score_dict.keys()):
+      print(i, score_dict[i])
+
+t1 = threading.Thread(target=hello_world, args=[])
+t1.start()
+print("hello, world")

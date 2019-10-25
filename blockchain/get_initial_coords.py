@@ -51,7 +51,8 @@ bot_dict = {
 #         self.current = {"x": curr_x, "y": curr_y}
 
 
-def construct_map_from_initial(block_dict, bot_dict):
+def construct_map_from_initial():
+    global block_dict
     state_map = dict()
     state_map["block_data"] = dict()
     for key in block_dict.keys():
@@ -61,8 +62,9 @@ def construct_map_from_initial(block_dict, bot_dict):
         state_map["block_data"][key] = {
             "current": {"x": block_dict[key][0], "y": block_dict[key][1]},
             "final": {"x": final_x, "y": final_y},
-            "state": "idle",
+            "state": "IDLE",
         }
+    # return state_map
     # for key in bot_dict.keys():
     #     state_map["bot_data"][key] = {
     #         "block_id": None,

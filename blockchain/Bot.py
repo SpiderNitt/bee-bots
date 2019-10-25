@@ -9,6 +9,11 @@ from sklearn.cluster import DBSCAN
 import sys
 import numpy as np
 import random
+from pyhton import intial
+#*not so sure about the import statement
+
+
+
 
 chain = BlockChain()
 
@@ -78,9 +83,16 @@ class Bot:
 
     # TODO INTEGRATION:
     def get_coordinates_from_vrep(self):
-        pass
+
+        #*port is the port which the vrep simulation is running
+        scene = scene(port)
+        map = scene.scenesinit(port)
+#*process map here according to req and return
+        return map
 
     # * query the blockchain and obtains the map as json data
+    def force_update():
+        pass
     def queryBlockChain(self):
         response = chain.get_block()
         # JSONresponse = jsonpickle.decode(response)

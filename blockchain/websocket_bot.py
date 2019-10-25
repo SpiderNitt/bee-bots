@@ -92,9 +92,17 @@ def overlappingClusters:
 async def main(websocket, path):
     uri = "ws://localhost:8765"
     async with websockets.connect(uri) as websocket:
+        await websocket.send("Bot initialized!!")
         while(1):
             time.sleep(1.5)
-            queryBlockChain()
+            # every 1 minute the bot will make a submission consisting of its copy of the blockchain and its id for REVIEW
+            submission = [bot_id,chain]
+            await websocket.send(submission)
+            updated_chain = await websocket.recv()
+            chain = updated_chain
+
+
+            # queryBlockChain()
 """map = {
  "block_data": [
         {"id": 123, "curr_x": 123,"curr_y"=123, "final_coordinates": 123,"status" : "picked", "owner_bot_id":123}

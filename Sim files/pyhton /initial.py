@@ -22,7 +22,7 @@ class scene:
                     self.obstacles_handles.update({stringData[i]:handles[i]})
                     _,pos=vrep.simxGetObjectPosition(clientID,handles[i],-1,vrep.simx_opmode_oneshot_wait)
                     self.obstacles_initpos.update({stringData[i]:pos})
-            print(self.obstacles_handles,self.obstacles_initpos)
+            return self.obstacles_handles,self.obstacles_initpos
 
 if __name__ == '__main__':
     a=scene(20000)

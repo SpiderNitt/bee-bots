@@ -230,7 +230,11 @@ async def main(websocket, path):
     async with websockets.connect(uri) as websocket:
         while 1:
             time.sleep(1.5)
-            queryBlockChain()
+            # every 1 minute the bot will make a submission (tuple) consisting of its copy of the blockchain and its id for REVIEW
+            submission = (bot_id,chain)
+            await websocket.send(submission)
+            updated_chain = await websocket.recv()
+            chain = updated_chain
 
 
 """state_map = {

@@ -22,7 +22,7 @@ async def main():
                 max_pair = (curr_chain.get_chain_length,count)
 
             count+=1
-        websocket.send(all_chains[max_pair[1]])
+        await websocket.send(all_chains[max_pair[1]])
 
 
 start_server = websockets.serve(main, "localhost", 8765)

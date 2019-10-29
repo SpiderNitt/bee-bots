@@ -1,14 +1,16 @@
 import asyncio
 import websockets
-import jsonpickle
+
+# import jsonpickle
 import requests
-from .chain import BlockChain
-from .block import Block
+from chain import BlockChain
+from block import Block
 import time
 from sklearn.cluster import DBSCAN
 import sys
 import numpy as np
 import random
+
 from pyhton import intial
 #*not so sure about the import statement
 
@@ -16,11 +18,18 @@ from pyhton import intial
 
 
 chain = BlockChain()
+import json
+from setInterval import setInterval
+import threading
+import websockets
+import enum
+
 
 """
 The static parameters
     bot_id
 """
+host = "ws://localhost:"
 
 states = {
     "IDLE": "idle",
@@ -31,10 +40,12 @@ states = {
     "MOVING": "moving",
     "END": "end",
 }
+
+bot_coordinates = dict()
 # * computes euclideian distance between two points
 def euclidean_dist(c1, c2):
-    delta_x = c1.x - c2.x
-    delta_y = c1.y - c2.y
+    delta_x = c1["x"] - c2["x"]
+    delta_y = c1["y"] - c2["y"]
     return (delta_x ** 2 + delta_y ** 2) ** (0.5)
 
 
@@ -66,67 +77,103 @@ def plotBlocks(info):
     return toplot
 
 
+def sort_coords(c1):
+    global bot_coordinates
+    print("this is bot coords:", bot_coordinates)
+    print("this is c1", c1)
+    c1 = {"x": c1["current"]["x"], "y": c1["current"]["y"]}
+    dist1 = euclidean_dist(c1, bot_coordinates)
+    # dist2 = euclidean_dist(c2, bot_coordinates)
+    # if dist1 < dist2:
+    #     return -1
+    # elif dist1 > dist2:
+    #     return 1
+    # else:
+    #     return 0
+    return dist1
+
+
 class Bot:
-    def __init__(self, my_port, known_ports):
+    def __init__(self, my_port, known_ports, data):
 
         # ! DO THIS
         self.coordinates = self.get_coordinates_from_vrep()
         self.port = my_port
         known_ports.discard(my_port)
         self.other_ports = known_ports
+        self.chain = BlockChain(data)
 
         # ! INSTEAD OF THIS
         self.coordinates = {"x": -0.024999968707561493, "y": 0.04999999701976776}
-
+        bot_coordinates = self.coordinates
         self.status = None  # * "Picked" or "Placed" or "Dropped" or "Free"
         self.block = None
 
     # TODO INTEGRATION:
     def get_coordinates_from_vrep(self):
+# <<<<<<< dev_blockchain
 
         #*port is the port which the vrep simulation is running
         scene = scene(port)
         map = scene.scenesinit(port)
 #*process map here according to req and return
-        return map
+        return map/
+# =======
+        global bot_coordinates
+        self.coordinates = {"x": -0.024999968707561493, "y": 0.04999999701976776}
+        bot_coordinates = self.coordinates
+        pass
+# >>>>>>> master
 
     # * query the blockchain and obtains the map as json data
     def force_update():
         pass
     def queryBlockChain(self):
-        response = chain.get_block()
+        response = self.chain.get_block()
         # JSONresponse = jsonpickle.decode(response)
         # plotBots(JSONresponse)
         # plotBlocks(JSONresponse)
         return response
 
     # * Comparator -> Sorts coordinatse based on least distance from bots cordinates
-    def sort_coords(self, c1, c2):
-        dist1 = euclidean_dist(c1, self.coordinates)
-        dist2 = euclidean_dist(c2, self.coordinates)
-        if dist1 < dist2:
-            return -1
-        elif dist1 > dist2:
-            return 1
-        else:
-            return 0
+
+    def prepare_to_send(self):
+        latset_block = self.chain.get_block()
+        json_string = json.dumps(latset_block)
+        return json_string
+
+    async def send_block(self):
+        global host
+        block_json = self.prepare_to_send()
+        for port in self.other_ports:
+            async with websockets.connect(host + str(port)) as websocket:
+                await websocket.send("block " + block_json)
 
     # * Gets the blockchain and updates it
     def update_blockchain(self, state):
         latest_block = self.queryBlockChain()
-        block_data = latest_block["block_data"]
+        block_data = latest_block.data["block_data"]
         block = block_data[self.block["id"]]
         block["state"] = state
-        block["current"].x = self.coordinates.x
-        block["current"].y = self.coordinates.y
-        block_data[block_id] = block
-        chain.add_block(latest_block)
+        block["current"]["x"] = self.coordinates["x"]
+        block["current"]["y"] = self.coordinates["y"]
+        block_data[self.block["id"]] = block
+        self.chain.add_block(block_data)
+        asyncio.get_event_loop().run_until_complete(self.send_block())
 
     # * Returns the kth closest block to the bot
     # * Return data:
     # * {
-    # * "x":..
-    # * "y":..
+    # * "current":
+    # *   {
+    # *   "x":..
+    # *   "y":..
+    # *   },
+    # * "final":
+    # *    {
+    # *      "x"...,
+    # *      "y"...
+    # *    },
     # * "id"..
     # * }
 
@@ -134,11 +181,21 @@ class Bot:
     def get_kth_closest_block(self, k=1):
         latest_block = self.queryBlockChain()
         block_array = []
-        for block_id in latest_block["block_data"].keys():
-            block = latest_block["block_data"][block_id]
-            if block["status"] != states.PLACED and block["status"] != states.PICKED:
+        for block_id in latest_block.data["block_data"].keys():
+            block = latest_block.data["block_data"][block_id]
+            if (
+                block["status"] != states["PLACED"]
+                and block["status"] != states["PICKED"]
+            ):
                 block_array.append(
-                    {"x": block["current"].x, "y": block["current"].y, "id": block_id}
+                    {
+                        "current": {
+                            "x": block["current"]["x"],
+                            "y": block["current"]["y"],
+                        },
+                        "final": {"x": block["final"]["x"], "y": block["final"]["y"]},
+                        "id": block_id,
+                    }
                 )
         if len(block_array) == 0:
             return None
@@ -152,10 +209,13 @@ class Bot:
     def choose_block(self):
         length = 0
         latest_block = self.queryBlockChain()
-        for block in latest_block["block_data"]:
+        print(latest_block)
+        for bl in latest_block.data["block_data"]:
+            block = latest_block.data["block_data"][bl]
+            print(block)
             if (
-                block["status"] == self.states.IDLE
-                or block["status"] == self.states.DROPPED
+                block["status"] == states["IDLE"]
+                or block["status"] == states["DROPPED"]
             ):
                 length += 1
         k = spit_weighted_number(length)
@@ -165,7 +225,7 @@ class Bot:
     # * pick_block if threshold error is less than given threshold
     def state_block_check(self, state=states["MOVING"], threshold=0.1):
         if state == states["MOVING"]:
-            block_coords = self.block.current
+            block_coords = self.block["current"]
         elif state == states["PICKED"]:
             block_coords = self.block.final
         if euclidean_dist(self.coordinates, block_coords) <= threshold:
@@ -174,15 +234,26 @@ class Bot:
 
     def pick_block(self):
         # self.status = states["PICKED"]
-        self.update_blockchain(self.block["id"], states["PICKED"])
+        self.update_blockchain(states["PICKED"])
 
     def goto_destination(self):
         pass
 
+    async def bot_server(self, websocket, path):
+        while True:
+            message = await websocket.recv()
+            if message[0:6] == "block ":
+                message = message[6:]
+                block = json.loads(message)
+                self.chain.add_block(block)
+            elif message[0:6] == "chain?":
+                chain_string = json.dumps(self.chain)
+                await websocket.send(chain_string)
+
     def is_block_pickable(self):
         latest_block = self.queryBlockChain()
-        block = latest_block["block_data"][self.block["id"]]
-        if block["status"] == status["DROPPED"] or block["status"] == status["IDLE"]:
+        block = latest_block.data["block_data"][self.block["id"]]
+        if block["status"] == states["DROPPED"] or block["status"] == states["IDLE"]:
             return True
         return False
 
@@ -199,7 +270,7 @@ class Bot:
         self.state = states["BEGIN"]
         while self.state != states["END"]:
             self.block = self.choose_block()
-            if block == None:
+            if self.block == None:
                 self.state = states["END"]
                 break
             else:
@@ -220,11 +291,35 @@ class Bot:
                     self.state = states["BEGIN"]
                     continue
 
+    async def force_update(self):
+        chain_array = []
+        for port in self.other_ports:
+            async with websockets.connect(host + str(port)) as websocket:
+                await websocket.send("chain?")
+                response = await websocket.recv()
+                chain = json.loads(response)
+                chain_array.append(chain)
+        for chain in chain_array:
+            if len(chain) >= len(self.chain):
+                self.chain = chain
+
+    def main_driver(self):
+
+        inter = setInterval(1, self.get_coordinates_from_vrep)
+        start_server = websockets.serve(self.bot_server, "localhost", self.port)
+        t1 = threading.Thread(target=self.infinite_loop, args=[])
+        t1.start()
+        foce_push_interval = setInterval(60, self.force_update)
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(start_server)
+        loop.run_forever()
+
 
 # def overlappingClusters:
 # this function will jump in case of and solve overlappingcluster problem
 
 
+# <<<<<<< dev_blockchain
 async def main(websocket, path):
     uri = "ws://localhost:8765"
     async with websockets.connect(uri) as websocket:
@@ -237,6 +332,8 @@ async def main(websocket, path):
             chain = updated_chain
 
 
+# =======
+# >>>>>>> master
 """state_map = {
  "block_data": [
         {"id": 123, "curr_x": 123,"curr_y"=123, "final_coordinates": 123,"status" : "picked", "owner_bot_id":123}

@@ -7,6 +7,12 @@ import websockets
 import sys
 import logging
 import json
+from Bot import Bot
+from setInterval import setInterval
+import time
+import random
+
+# from get_initial_coords import construct_map_from_initial
 
 logging.basicConfig(level=logging.INFO)
 
@@ -26,28 +32,46 @@ all_ports = []
 
 # def mytimer(time_limit=10.0):
 #     is_timed_out = True
-class setInterval:
-    def __init__(self, interval, action):
-        self.interval = interval
-        self.action = action
-        self.stopEvent = threading.Event()
-        thread = threading.Thread(target=self.__setInterval)
-        thread.start()
 
-    def __setInterval(self):
-        nextTime = time.time() + self.interval
-        while not self.stopEvent.wait(nextTime - time.time()):
-            nextTime += self.interval
-            self.action()
+block_dict = {
+    "Cuboid0": [-0.024999968707561493, 0.04999999701976776, 0.04999992251396179],
+    "Cuboid6": [-0.7999994158744812, -0.2750002145767212, 0.04999992251396179],
+    "Cuboid4": [-0.6249995827674866, 0.4499998092651367, 0.04999992251396179],
+    "Cuboid1": [-0.1499997079372406, -0.875, 0.04999992251396179],
+    "Cuboid7": [0.4967479407787323, -1.04117751121521, 0.04999992251396179],
+    "Cuboid3": [0.3250003159046173, -0.35000020265579224, 0.04999992251396179],
+    "Cuboid8": [-1.2749996185302734, 0.5249999761581421, 0.04999992251396179],
+    "Cuboid5": [-0.39999958872795105, -0.5500001311302185, 0.04999992251396179],
+    "Cuboid10": [-1.3499995470046997, -0.09999996423721313, 0.04999992251396179],
+    "Cuboid0": [-0.24999988079071045, -0.30000007152557373, 0.04999992251396179],
+    "Cuboid13": [1.0056431293487549, -1.6703739166259766, 0.04999992251396179],
+    "Cuboid9": [-0.7999996542930603, -0.6999999284744263, 0.04999992251396179],
+    "Cuboid11": [-0.007799053564667702, -1.346219539642334, 0.04999992251396179],
+    "Cuboid12": [-1.5499995946884155, -0.6499995589256287, 0.04999992251396179],
+    "Cuboid14": [-1.1749998331069946, -1.7249996662139893, 0.02499992400407791],
+    "Cuboid2": [0.25000032782554626, -0.7749999761581421, 0.04999992251396179],
+}
 
-    def cancel(self):
-        self.stopEvent.set()
+
+def construct_map_from_initial(block_dict):
+    state_map = dict()
+    state_map["block_data"] = dict()
+    for key in block_dict.keys():
+        final_x = random.random() * 1.5
+        final_y = random.random() * 1.5
+        final_z = random.random() * 1.5
+        state_map["block_data"][key] = {
+            "current": {"x": block_dict[key][0], "y": block_dict[key][1]},
+            "final": {"x": final_x, "y": final_y},
+            "status": "idle",
+        }
+    state_map["total_blocks"] = len(block_dict.keys())
+    return state_map
 
 
 def everyone_end(port_dict):
-    for key in port_dict.keys():
-        print(key, port_dict[key])
-        if port_dict[key] == False:
+    for port in port_dict.keys():
+        if port_dict[port] == False:
             return False
     return True
 
@@ -56,7 +80,7 @@ async def server(websocket, path):
     global ports
     port_dict = dict()
     ports.add(client_port)
-    t_end = time.time() + 1800
+    # t_end = time.time() + 1800
 
     while True:
 
@@ -151,6 +175,14 @@ def proof_of_work(puzzle_bits=4):
     handle_host()
 
 
+def run_bot():
+    global client_port
+    global ports
+    state_map = construct_map_from_initial(block_dict)
+    bot = Bot(client_port, ports, state_map)
+    bot.main_driver()
+
+
 def handle_host():
     if is_host:
         start_server = websockets.serve(server, "localhost", host_port, close_timeout=1)
@@ -158,15 +190,16 @@ def handle_host():
         loop = asyncio.get_event_loop()
         loop.run_until_complete(start_server)
         loop.run_forever()
-        run_bot(port, known_ports)
+        # run_bot(port, known_ports)
         print("out of loop")
 
     elif is_client:
         # start_server = websockets.serve(client, "localhost", sys.argv[1])
         logging.info("running client...")
         asyncio.get_event_loop().run_until_complete(client())
-        run_bot(port, known_ports)
+        # run_bot(port, known_ports)
         # asyncio.get_event_loop().run_forever()
+    run_bot()
 
 
 inter = setInterval(1, query)

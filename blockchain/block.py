@@ -2,12 +2,13 @@ import hashlib
 import threading
 import jsonpickle
 import numpy as np
+import enum
 
 stakes = [10, 10, 10, 10, 10]
 majority_vote = sum(stakes) / len(stakes)
 
 
-class Block:
+class Block():
     def __init__(self, index, timestamp, data, previous_hash):
         self.is_timed_out = False
         self.index = index
@@ -19,6 +20,9 @@ class Block:
         else:
             self.pos = self.proof_of_stake(stakes)
         self.hash = self.hashing()
+
+    def __iter__(self):
+        return self
 
     def mytimer(self, time_limit=10.0):
         self.is_timed_out = True

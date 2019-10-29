@@ -1,15 +1,17 @@
-from .block import Block
+from block import Block
 import datetime
 import copy
 import json
+import jsonpickle
+import enum
 
 
 class BlockChain:
-    def __init__(self):
-        self.blocks = [self.get_genesis_block()]
+    def __init__(self, data):
+        self.blocks = [self.get_genesis_block(data)]
 
-    def get_genesis_block(self):
-        return Block(0, datetime.datetime.utcnow(), "Genesis", "arbitrary")
+    def get_genesis_block(self, data):
+        return Block(0, datetime.datetime.utcnow(), data, "arbitrary")
 
     def fork(self):
         c = copy.deepcopy(self)
@@ -37,7 +39,7 @@ class BlockChain:
                 print("Block with index " + str(len(self.blocks)) + " added")
 
     def get_block(self):
-        return self.blocks[len(self.blocks) - 1].toJSON()
+        return self.blocks[len(self.blocks) - 1]
 
     def get_chain_length(self):
         return self.blocks[len(self.blocks)]
@@ -57,6 +59,9 @@ class BlockChain:
             if self.blocks[i - 1].timestamp >= self.blocks[i].timestamp:
                 flag = False
         return flag
+
+    def toJSON(self):
+        return jsonpickle.encode(self)
 
 
 """map = {

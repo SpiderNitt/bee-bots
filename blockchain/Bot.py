@@ -10,11 +10,20 @@ from sklearn.cluster import DBSCAN
 import sys
 import numpy as np
 import random
+
+from pyhton import intial
+#*not so sure about the import statement
+
+
+
+
+chain = BlockChain()
 import json
 from setInterval import setInterval
 import threading
 import websockets
 import enum
+
 
 """
 The static parameters
@@ -102,12 +111,23 @@ class Bot:
 
     # TODO INTEGRATION:
     def get_coordinates_from_vrep(self):
+# <<<<<<< dev_blockchain
+
+        #*port is the port which the vrep simulation is running
+        scene = scene(port)
+        map = scene.scenesinit(port)
+#*process map here according to req and return
+        return map/
+# =======
         global bot_coordinates
         self.coordinates = {"x": -0.024999968707561493, "y": 0.04999999701976776}
         bot_coordinates = self.coordinates
         pass
+# >>>>>>> master
 
     # * query the blockchain and obtains the map as json data
+    def force_update():
+        pass
     def queryBlockChain(self):
         response = self.chain.get_block()
         # JSONresponse = jsonpickle.decode(response)
@@ -299,6 +319,21 @@ class Bot:
 # this function will jump in case of and solve overlappingcluster problem
 
 
+# <<<<<<< dev_blockchain
+async def main(websocket, path):
+    uri = "ws://localhost:8765"
+    async with websockets.connect(uri) as websocket:
+        while 1:
+            time.sleep(1.5)
+            # every 1 minute the bot will make a submission (tuple) consisting of its copy of the blockchain and its id for REVIEW
+            submission = (bot_id,chain)
+            await websocket.send(submission)
+            updated_chain = await websocket.recv()
+            chain = updated_chain
+
+
+# =======
+# >>>>>>> master
 """state_map = {
  "block_data": [
         {"id": 123, "curr_x": 123,"curr_y"=123, "final_coordinates": 123,"status" : "picked", "owner_bot_id":123}

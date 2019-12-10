@@ -1,0 +1,47 @@
+[
+  {
+    "bot": "eBot1",
+    "script": "Ebot1",
+    "thread_function": "threadFunction",
+    "left_joint": "LeftJoint1",
+    "right_joint": "RightJoint1",
+    "proximity_sensor_one": "ProximitySensor5",
+    "proximity_sensor_two": "ProximitySensor6",
+    "proximity_sensor_three": "ProximitySensor7",
+    "publish_ros": "publishRos",
+    "follow": "follow",
+    "start": "Start",
+    "end": "End",
+    "sentinel": "Cuboid14"
+  },
+  {
+    "bot": "eBot2",
+    "script": "Ebot2",
+    "thread_function": "threadFunction",
+    "left_joint": "LeftJoint",
+    "right_joint": "RightJoint",
+    "proximity_sensor_one": "ProximitySensor",
+    "proximity_sensor_two": "ProximitySensor1",
+    "proximity_sensor_three": "ProximitySensor2",
+    "publish_ros": "publishRos",
+    "follow": "follow",
+    "start": "Start",
+    "end": "End",
+    "sentinel": "Cuboid14"
+  },
+  {
+    "bot": "eBot3",
+    "script": "Ebot3",
+    "thread_function": "threadFunction",
+    "left_joint": "LeftJoint0",
+    "right_joint": "RightJoint0",
+    "proximity_sensor_one": "ProximitySensor0",
+    "proximity_sensor_two": "ProximitySensor3",
+    "proximity_sensor_three": "ProximitySensor4",
+    "publish_ros": "publishRos",
+    "follow": "follow",
+    "start": "Start",
+    "end": "End",
+    "sentinel": "Cuboid14"
+  }
+]

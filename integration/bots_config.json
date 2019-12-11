@@ -14,7 +14,8 @@
     "start": "Start",
     "end": "End",
     "sentinel": "Cuboid14",
-    "port": 19999
+    "port": 19999,
+    "port_socket": 8765
   },
   {
     "bot": "eBot2",
@@ -30,7 +31,8 @@
     "start": "Start",
     "end": "End",
     "sentinel": "Cuboid14",
-    "port": 20000
+    "port": 20000,
+    "port_socket": 8764
   },
   {
     "bot": "eBot3",
@@ -46,6 +48,7 @@
     "start": "Start",
     "end": "End",
     "sentinel": "Cuboid14",
-    "port": 20001
+    "port": 20001,
+    "port_socket": 8763
   }
 ]

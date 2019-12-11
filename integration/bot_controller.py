@@ -6,7 +6,7 @@ import sys
 bot_config_filename = "bots_config.json"
 json_string = open(bot_config_filename).read()
 bot_configs = json.loads(json_string)
-# print(bot_configs)
+print(bot_configs)
 mp_array = []
 
 
@@ -41,5 +41,5 @@ for (i, config) in enumerate(bot_configs):
 #         bot_init(config)
 
 
-print("simulaiton complete")
+print("simulation complete")
 

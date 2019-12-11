@@ -91,6 +91,7 @@ class bot:
         if clientID!=-1:
                 _,ebot=vrep.simxGetObjectHandle(clientID,self.bot_config['bot'],vrep.simx_opmode_oneshot_wait)
                 _,pos=vrep.simxGetObjectPosition(clientID,ebot,-1,vrep.simx_opmode_oneshot_wait)
+                print("output of get position:::: ", pos)
                 return pos
 
     def velocity(self,lmvelocity,rmvelocity,port):
@@ -131,7 +132,7 @@ class bot:
         clientID=vrep.simxStart('127.0.0.1',port,True,True,5000,5)
         if clientID!=-1:
                 print("kept")
-                handle=get_object_handle(port,self.bot_config['sentinel'])  # ! CUBOID 12 or CUBOID 14
+                handle=self.get_object_handle(port,self.bot_config['sentinel'])  # ! CUBOID 12 or CUBOID 14
                 _=vrep.simxSetObjectPosition(clientID,handle,-1,position,vrep.simx_opmode_oneshot_wait)
 
     def send_to_ros(self,port,path):
@@ -199,7 +200,7 @@ class bot:
             # print(len(retFloats))
 
             while 1:
-                ultrasonic = self.stop_function(19999)
+                ultrasonic = self.stop_function(self.port)
                 check = 0
                 if ultrasonic[0] < 0.5 or ultrasonic[1] < 0.5 or ultrasonic[2] < 0.5:
                     check = 1
@@ -237,6 +238,17 @@ class bot:
                     omega_left = v_l / r_w
 
                     # _,_,_,_,_=vrep.simxCallScriptFunction(clientID,'Dummy',vrep.sim_scripttype_childscript,'veloctiyRos',[],[omega_right,omega_right],[],emptyBuff,vrep.simx_opmode_blocking)
+                    # _ = vrep.simxCallScriptFunction(
+                    #     clientID,
+                    #     self.bot_config["script"],
+                    #     vrep.sim_scripttype_childscript,
+                    #     self.bot_config["v_manip"],
+                    #     [],
+                    #     [-1*omega_left, -1*omega_right],
+                    #     [],
+                    #     emptyBuff,
+                    #     vrep.simx_opmode_blocking,
+                    # )
                     _ = vrep.simxSetJointTargetVelocity(
                         clientID, lm, (-1 * omega_left), vrep.simx_opmode_oneshot_wait
                     )

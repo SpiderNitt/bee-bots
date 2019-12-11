@@ -11,7 +11,7 @@ mp_array = []
 
 
 def bot_init(config):
-    ebot1 = bot(19999, config, 0, 0)
+    ebot1 = bot(config["port"], config, 0, 0)
     # ebot1.initialise_config(config)
     # ebot1.pick()
     ebot1.Follow_path([0.5, 2, 0.0])

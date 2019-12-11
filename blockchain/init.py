@@ -93,7 +93,8 @@ async def server(websocket, path):
             port_num = int(message[-4:])
             port_dict[str(port_num)] = True
             if everyone_end(port_dict):
-                loop = asyncio.get_running_loop()
+                loop = asyncio.get_event_loop()
+                print("loop runnning")
                 loop.stop()
         else:
             port_num = message

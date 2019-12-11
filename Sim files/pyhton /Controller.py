@@ -19,6 +19,8 @@ def followpath(path,objectHandle,port):
         flag=0
         x=0
         check=0
+        emptyBuff=bytearray()
+        ultrasonic=[]
 
         _,robotHandle=vrep.simxGetObjectHandle(clientID,'Start',vrep.simx_opmode_oneshot_wait)
         _,targetHandle=vrep.simxGetObjectHandle(clientID,'End',vrep.simx_opmode_oneshot_wait)
@@ -27,7 +29,7 @@ def followpath(path,objectHandle,port):
         _,ebot=vrep.simxGetObjectHandle(clientID,'eBot',vrep.simx_opmode_oneshot_wait)
         _,picksubs=vrep.simxGetObjectHandle(clientID,'Cuboid14',vrep.simx_opmode_oneshot_wait)
 
-        #res,retInts,retFloats,retStrings,retBuffer=vrep.simxCallScriptFunction(clientID,'Dummy',vrep.sim_scripttype_childscript,'threadFunction',[],path,[],emptyBuff,vrep.simx_opmode_oneshot_wait)
+        res,retInts,retFloats,retStrings,retBuffer=vrep.simxCallScriptFunction(clientID,'Dummy',vrep.sim_scripttype_childscript,'threadFunction',[],path,[],emptyBuff,vrep.simx_opmode_oneshot_wait)
         #print(len(retFloats))
 
         while(1):
@@ -39,12 +41,12 @@ def followpath(path,objectHandle,port):
             
             if(check == 0):
 
-                    #if (time.time()-prev_time)>100:
-                        #if (not flag) :
-                            #retFloats=path_5_sec(clientID,path)
-                            #sleep(0.1)
-                            #pos_on_path=1
-                            #prev_time=time.time()
+                    if (time.time()-prev_time)>100:
+                        if (not flag) :
+                            retFloats=path_5_sec(clientID,path)
+                            sleep(0.1)
+                            pos_on_path=1
+                            prev_time=time.time()
 
                     emptyBuff=bytearray()
                     _,_,dis,_,_=vrep.simxCallScriptFunction(clientID,'Dummy',vrep.sim_scripttype_childscript,'follow',[pos_on_path],retFloats,[],emptyBuff,vrep.simx_opmode_blocking)

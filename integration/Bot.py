@@ -275,7 +275,7 @@ class Bot:
 
     def pick_block(self):
         # self.status = states["PICKED"]
-        self.update_blockchain(states["PICKED"])
+        # self.update_blockchain(states["PICKED"])
         self.bot_instance.pick()
 
     def goto_destination(self):
@@ -300,8 +300,8 @@ class Bot:
         return False
 
     def place_block(self):
-        self.update_blockchain(states["PLACED"])
-        self.bot_instance.place()
+        # self.update_blockchain(states["PLACED"])
+        # self.bot_instance.place()
         self.coordinates = self.get_coordinates_from_vrep()
         # self.status = states["LOOKING"]
         # block_coords = latest_block["block_data"][block_id].final
@@ -315,7 +315,7 @@ class Bot:
             y = block["current"]["y"]
         print(block)
         print(x,y)
-        self.bot_instance.Follow_path([x, y, 0])
+        self.bot_instance.Follow_path([x, y, 0.05])
 
     def chooseTargetBlock(self, chosenLabel, labels):
         pass
@@ -373,11 +373,15 @@ def bot_init(known_ports, state_map, config):
 
     # ebot1.place_from_other_sceme(21, [0.5, 2, 0.0])
 
-
+block_dict_copy = {
+    "Cuboid1": [-.0500, -1.625, 0.775, -0.05],
+    "Cuboid2": [-0.85, -1.25, -0.75, -0.3],
+    "Cuboid3": [-1.77500, -1.2412, 0.5717, -0.3162],
+}
 if __name__ == "__main__":
     filename = "bots_config.json"
     known_ports = construct_known_ports(filename)
-    state_map = construct_map_from_initial(block_dict)
+    state_map = construct_map_from_initial(block_dict_copy)
     json_string = open(filename).read()
     bot_configs = json.loads(json_string)
     for (i, config) in enumerate(bot_configs):

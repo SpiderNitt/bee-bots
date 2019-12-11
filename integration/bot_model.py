@@ -195,8 +195,8 @@ class bot:
             _, picksubs = vrep.simxGetObjectHandle(
                 clientID, self.bot_config['sentinel'], vrep.simx_opmode_oneshot_wait
             )
-
-            # res,retInts,retFloats,retStrings,retBuffer=vrep.simxCallScriptFunction(clientID,'Dummy',vrep.sim_scripttype_childscript,'threadFunction',[],path,[],emptyBuff,vrep.simx_opmode_oneshot_wait)
+            emptyBuff = bytearray()
+            res,retInts,retFloats,retStrings,retBuffer=vrep.simxCallScriptFunction(clientID,self.bot_config['script'],vrep.sim_scripttype_childscript,self.bot_config["thread_function"],[],path,[],emptyBuff,vrep.simx_opmode_oneshot_wait)
             # print(len(retFloats))
 
             while 1:
@@ -208,12 +208,12 @@ class bot:
 
                 if check == 0:
 
-                    if (time.time() - prev_time) > 100:
-                        if not flag:
-                            retFloats = self.path_5_sec(clientID, path)
-                            sleep(0.1)
-                            pos_on_path = 1
-                            prev_time = time.time()
+                    # if (time.time() - prev_time) > 100:
+                    #     if not flag:
+                    #         # retFloats = self.path_5_sec(clientID, path)
+                    #         sleep(0.1)
+                    #         pos_on_path = 1
+                    #         prev_time = time.time()
 
                     emptyBuff = bytearray()
                     _, _, dis, _, _ = vrep.simxCallScriptFunction(
@@ -228,7 +228,7 @@ class bot:
                         vrep.simx_opmode_blocking,
                     )
 
-                    v_des = -0.02
+                    v_des = -0.03
                     om_des = -0.8 * dis[1]
                     d = 0.06
                     v_r = v_des + d * om_des
@@ -256,29 +256,7 @@ class bot:
                         clientID, rm, (-1 * omega_right), vrep.simx_opmode_oneshot_wait
                     )
 
-                    if dis[0] < 0.1:
-                        pos_on_path += 3
-
-                    if flag == 1:
-                        if (
-                            math.sqrt(
-                                (path[0] - retFloats[pos_on_path - 1]) ** 2
-                                + (path[1] - retFloats[pos_on_path]) ** 2
-                            )
-                            < 0.01
-                        ):
-                            _ = vrep.simxSetJointTargetVelocity(
-                                clientID, lm, 0, vrep.simx_opmode_oneshot_wait
-                            )
-                            _ = vrep.simxSetJointTargetVelocity(
-                                clientID, rm, 0, vrep.simx_opmode_oneshot_wait
-                            )
-                            print("exit")
-                            x = 1
-                            break
-
-                    if x == 1:
-                        break
+                   
 
                     print(
                         math.sqrt(
@@ -291,26 +269,39 @@ class bot:
                             (path[0] - retFloats[pos_on_path - 1]) ** 2
                             + (path[1] - retFloats[pos_on_path]) ** 2
                         )
-                        < 0.3
+                        < 0.15
                     ):
-                        flag = 1
+                    
 
-                    if objectHandle:
-                        _ = vrep.simxSetObjectPosition(
-                            clientID,
-                            picksubs,
-                            ebot,
-                            [0, 0, 0.052],
-                            vrep.simx_opmode_oneshot_wait,
+                        _ = vrep.simxSetJointTargetVelocity(
+                            clientID, lm, 0, vrep.simx_opmode_oneshot_wait
                         )
+                        _ = vrep.simxSetJointTargetVelocity(
+                            clientID, rm, 0, vrep.simx_opmode_oneshot_wait
+                        )
+                        
 
-                else:
-                    _ = vrep.simxSetJointTargetVelocity(
-                        clientID, lm, 0, vrep.simx_opmode_oneshot_wait
-                    )
-                    _ = vrep.simxSetJointTargetVelocity(
-                        clientID, rm, 0, vrep.simx_opmode_oneshot_wait
-                    )
+                        if objectHandle:
+                            _ = vrep.simxSetObjectPosition(
+                                clientID,
+                                picksubs,
+                                ebot,
+                                [0, 0, 0.052],
+                                vrep.simx_opmode_oneshot_wait,
+                            )
+                        print("exit")
+                        break
+                    if dis[0] < 0.1:
+                        pos_on_path += 3
+                   
+
+                # else:
+                #     _ = vrep.simxSetJointTargetVelocity(
+                #         clientID, lm, 0, vrep.simx_opmode_oneshot_wait
+                #     )
+                #     _ = vrep.simxSetJointTargetVelocity(
+                #         clientID, rm, 0, vrep.simx_opmode_oneshot_wait
+                #     )
 
 
     def path_5_sec(self,clientID, path):

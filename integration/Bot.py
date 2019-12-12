@@ -124,23 +124,24 @@ class Bot:
         self.chain = BlockChain(state_map)
         
         self.vrep_port = config["port"]
-        self.get_coordinates_from_vrep()
+        pos = self.bot_instance.Get_postiton()
+        # print("this is pos in main bot: ", pos)
+        self.coordinates = {"x":pos[0], "y":pos[1]}
+        # print("coordinats::: ", self.coordinates)
+        # self.get_coordinates_from_vrep()
         self.status = None  # * "Picked" or "Placed" or "Dropped" or "Free"
         self.block = None
 
     # TODO INTEGRATION:
     def get_coordinates_from_vrep(self):
-        # [x, y, z] = self.bot_instance.Get_position(self.vrep_port)
-        a =  self.bot_instance.Get_position(self.vrep_port)
-        print("this is a: ", a)
-        if a is not None:
-            coordinates = {"x": a[0], "y": a[1]}
-            self.coordinates = coordinates
-            print("these are the bots coord", self.coordinates)
+        self.coordinates = self.bot_instance.coordinates
+            # print("these are the bots coord", self.coordinates)
         # return coordinates
 
     # * computes euclideian distance between two points
     def euclidean_dist(self, c1, c2):
+        # print("this is c1: ", c1)
+        # print("this is  c2: ", c2)
         delta_x = c1["x"] - c2["x"]
         delta_y = c1["y"] - c2["y"]
         # delta_x = 5
@@ -148,6 +149,8 @@ class Bot:
         return (delta_x ** 2 + delta_y ** 2) ** (0.5)
 
     def spit_weighted_number(self, length):
+        if length==0:
+            return 0
         random_array = []
         for i in range(1, length + 1):
             random_array.append([i] * (length + 1 - i))
@@ -158,7 +161,7 @@ class Bot:
         pass
 
     def sort_coords(self, c1):
-        # print("this is bot coords:", bot_coordinates)
+        # print("this is bot coords:", self.coordinates)
         # print("this is c1", c1)
         c1 = {"x": c1["current"]["x"], "y": c1["current"]["y"]}
         dist1 = self.euclidean_dist(c1, self.coordinates)
@@ -173,16 +176,17 @@ class Bot:
 
     # * query the blockchain and obtains the state_map (topmost block) as data
     def queryBlockChain(self):
-        response = self.chain.get_block()
+        response = self.chain[len(self.chain.blocks)-1]
+        # print("this is response::::", response.data)
         return response
 
     def prepare_to_send(self):
-        latset_block = self.chain.get_block()
-        json_string = json.dumps(latset_block)
+        latest_block = self.chain.get_block()
+        json_string = json.dumps(latest_block.data)
         return json_string
 
     async def send_block(self):
-        global host
+        print("sending block to all other ports: ")
         block_json = self.prepare_to_send()
         for port in self.other_ports:
             async with websockets.connect(host + str(port)) as websocket:
@@ -190,15 +194,21 @@ class Bot:
 
     # * Gets the blockchain and updates it
     def update_blockchain(self, state):
+        # print("update blockchain called")
         latest_block = self.queryBlockChain()
-        block_data = latest_block.data["block_data"]
+        latest_copy = latest_block
+        # print("this is latest_copy", latest_copy)
+        # print("its type??: ", type(latest_copy))
+        # print("its data:: ", latest_copy.data)
+        block_data = latest_copy.data["block_data"]
         block = block_data[self.block["id"]]
-        block["state"] = state
-        block["current"]["x"] = self.coordinates["x"]
-        block["current"]["y"] = self.coordinates["y"]
+        block["status"] = state
+        # block["current"]["x"] = self.coordinates["x"]
+        # block["current"]["y"] = self.coordinates["y"]
         block_data[self.block["id"]] = block
-        self.chain.add_block(block_data)
-        asyncio.get_event_loop().run_until_complete(self.send_block())
+        latest_copy.data["block_data"] = block_data
+        self.chain.add_block(latest_copy.data)
+        # asyncio.get_event_loop().run_until_complete(self.send_block())
 
     # * Returns the kth closest block to the bot
     # * Return data:
@@ -220,6 +230,7 @@ class Bot:
     def get_kth_closest_block(self, k=1):
         latest_block = self.queryBlockChain()
         block_array = []
+        # self.coordinates = self.get_coordinates_from_vrep()
         for block_id in latest_block.data["block_data"].keys():
             block = latest_block.data["block_data"][block_id]
             if (
@@ -260,6 +271,8 @@ class Bot:
                 length += 1
         k = self.spit_weighted_number(length)
         print("chosen k:: ", k)
+        if k==0:
+            return None
         block = self.get_kth_closest_block(k)
         return block
 
@@ -274,17 +287,23 @@ class Bot:
         return False
 
     def pick_block(self):
-        # self.status = states["PICKED"]
-        # self.update_blockchain(states["PICKED"])
+       
         self.bot_instance.pick()
+        if self.bot_instance.objectPicked !=0:
+         self.update_blockchain(states["PICKED"])
+         return True
+        return False
+
 
     def goto_destination(self):
         pass
 
     async def bot_server(self, websocket, path):
+        print("server running at port: ", self.port)
         while True:
             message = await websocket.recv()
             if message[0:6] == "block ":
+                print("receiving block")
                 message = message[6:]
                 block = json.loads(message)
                 self.chain.add_block(block)
@@ -300,9 +319,9 @@ class Bot:
         return False
 
     def place_block(self):
-        # self.update_blockchain(states["PLACED"])
-        # self.bot_instance.place()
-        self.coordinates = self.get_coordinates_from_vrep()
+        self.update_blockchain(states["PLACED"])
+        self.bot_instance.place()
+        # self.coordinates = self.get_coordinates_from_vrep()
         # self.status = states["LOOKING"]
         # block_coords = latest_block["block_data"][block_id].final
 
@@ -313,8 +332,8 @@ class Bot:
         else:
             x = block["current"]["x"]
             y = block["current"]["y"]
-        print(block)
-        print(x,y)
+        # print(block)
+        # print(x,y)
         self.bot_instance.Follow_path([x, y, 0.05])
 
     def chooseTargetBlock(self, chosenLabel, labels):
@@ -322,23 +341,28 @@ class Bot:
 
     # choose closest block from chosen cluster
     def infinite_loop(self):
-        r=print("inside infinite loop")
+        # r=print("inside infinite loop")
         self.state = states["BEGIN"]
         while self.state != states["END"]:
             self.block = self.choose_block()
-            print("chosen block:: ", self.block)
             if self.block == None:
+                print("No block to pick")
                 self.state = states["END"]
                 break
             else:
+                print("chosen block id: ", self.block["id"])
                 self.state = states["MOVING"]
                 self.follow_path(self.block)
                 if self.is_block_pickable():
-                    self.state = states["PICKED"]
-                    self.pick_block()
-                    self.follow_path(self.block, True)
-                    self.place_block()
-                    self.state = states["PLACED"]
+                    # print("before time sleep")
+                    time.sleep(2)
+                    # print("after time sleep")
+                    status = self.pick_block()
+                    if status:
+                        self.state = states["PICKED"]
+                        self.follow_path(self.block, True)
+                        self.place_block()
+                        self.state = states["PLACED"]
                 self.states = states["BEGIN"]
                 continue
 
@@ -351,18 +375,18 @@ class Bot:
                 chain = json.loads(response)
                 chain_array.append(chain)
         for chain in chain_array:
-            if len(chain) >= len(self.chain):
+            if len(chain) > len(self.chain):
                 self.chain = chain
 
     def main_driver(self):
 
         # inter = setInterval(3, self.get_coordinates_from_vrep)
-        start_server = websockets.serve(self.bot_server, "localhost", self.port)
+        # start_server = websockets.serve(self.bot_server, "localhost", self.port)
         t1 = threading.Thread(target=self.infinite_loop, args=[])
         t1.start()
-        foce_push_interval = setInterval(60, self.force_update)
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(start_server)
+        # foce_push_interval = setInterval(60, self.force_update)
+        # loop = asyncio.get_event_loop()
+        # loop.run_until_complete(start_server)
         # loop.run_forever()
         t1.join()
 
@@ -374,9 +398,9 @@ def bot_init(known_ports, state_map, config):
     # ebot1.place_from_other_sceme(21, [0.5, 2, 0.0])
 
 block_dict_copy = {
-    "Cuboid1": [-.0500, -1.625, 0.775, -0.05],
-    "Cuboid2": [-0.85, -1.25, -0.75, -0.3],
-    "Cuboid3": [-1.77500, -1.2412, 0.5717, -0.3162],
+    "Cuboid1": [-.77500, -0.900, -0.128, -0.662],
+    "Cuboid2": [-0.275, -1.525, 0.122, -0.2912],
+    "Cuboid3": [-1.37800, -0.6912, 0.220, 0.2838],
 }
 if __name__ == "__main__":
     filename = "bots_config.json"

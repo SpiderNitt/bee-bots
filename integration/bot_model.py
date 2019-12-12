@@ -8,22 +8,22 @@ import time
 from time import sleep
 
 
-bot_config = {
-"bot": 'eBot1',
-"script": 'Dummy',
-"thread_function": "threadFunction",
-"left_joint": "LeftJoint1",
-"right_joint": "RightJoint1",
-"proximity_sensor_one": "ProximitySensor5",
-"proximity_sensor_two": "ProximitySensor6",
-"proximity_sensor_three": "ProximitySensor7",
-'publish_ros': "publishRos",
-"follow": "follow",
-"start":"Start", 
-"end":"End",
-"sentinel":"Cuboid14",
-"follow" :"follow"
-}
+# bot_config = {
+# "bot": 'eBot1',
+# "script": 'Dummy',
+# "thread_function": "threadFunction",
+# "left_joint": "LeftJoint1",
+# "right_joint": "RightJoint1",
+# "proximity_sensor_one": "ProximitySensor5",
+# "proximity_sensor_two": "ProximitySensor6",
+# "proximity_sensor_three": "ProximitySensor7",
+# 'publish_ros': "publishRos",
+# "follow": "follow",
+# "start":"Start", 
+# "end":"End",
+# "sentinel":"Cuboid14",
+# "follow" :"follow"
+# }
 
 # def initialise(bot_configuration):
 #     bot_config = bot_configuration
@@ -42,6 +42,7 @@ class bot:
         self.objectPicked = 0
         self.port = port
         self.Get_postiton()
+        self.Get_position_b(self.port)
         
        
 
@@ -55,10 +56,11 @@ class bot:
         self.Get_postiton()
 
     def Get_postiton(self):
-        self.pos = self.Get_position(self.port)
+        self.pos = self.Get_position_b(self.port)
+        return self.pos
 
     def pick(self):
-        self.objectPicked = pick(self.port)
+        self.objectPicked = self.pick_b(self.port)
 
     def place_from_other_sceme(self, objectHandle, pos):
         self.place_block(self.port, objectHandle, pos)
@@ -67,7 +69,8 @@ class bot:
         if self.objectPicked == 0:
             print("noting to place")
         else:
-            place(self.objectPicked, self.port)
+            print("Blacing block")
+            self.place_b(self.objectPicked, self.port)
             self.objectPicked = 0
 
     def path(self,endpath,port):
@@ -85,13 +88,15 @@ class bot:
                 _,handle=vrep.simxGetObjectHandle(clientID,object,vrep.simx_opmode_oneshot_wait)
                 return handle
 
-    def Get_position(self,port):
+    def Get_position_b(self,port):
         vrep.simxFinish(-1)
         clientID=vrep.simxStart('127.0.0.1',port,True,True,5000,5)
         if clientID!=-1:
                 _,ebot=vrep.simxGetObjectHandle(clientID,self.bot_config['bot'],vrep.simx_opmode_oneshot_wait)
                 _,pos=vrep.simxGetObjectPosition(clientID,ebot,-1,vrep.simx_opmode_oneshot_wait)
-                print("output of get position:::: ", pos)
+                # print("output of get position:::: ", pos)
+                self.coordinates = {"x":pos[0], "y":pos[1]}
+                # print("coordinates inside bot instance::: ", self.coordinates)
                 return pos
 
     def velocity(self,lmvelocity,rmvelocity,port):
@@ -103,22 +108,65 @@ class bot:
             _=vrep.simxSetJointTargetVelocity(clientID,lm,lmvelocity,vrep.simx_opmode_oneshot_wait)
             _=vrep.simxSetJointTargetVelocity(clientID,rm,rmvelocity,vrep.simx_opmode_oneshot_wait)
 
-    def pick(self,port):
+    def pick_b(self,port):
+        dis1_flag = False
+        dis2_flag = False
+        dis3_flag = False
+        dis4_flag = False
+        dis5_flag = False
         vrep.simxFinish(-1)
         clientID=vrep.simxStart('127.0.0.1',port,True,True,5000,5)
         if clientID!=-1:
-            _,ps=vrep.simxGetObjectHandle(clientID,self.bot_config['proximity_sensor_one'],vrep.simx_opmode_oneshot_wait)
-            _,detectionState,detectionPoint,detectionObjectHandle,_=vrep.simxReadProximitySensor(clientID,ps,vrep.simx_opmode_oneshot_wait)
-            print(detectionState,detectionPoint,detectionObjectHandle)
-            dis = math.sqrt(detectionPoint[0]**2+detectionPoint[1]**2+detectionPoint[2]**2)
-            if (detectionState==True and dis<0.5):
-                    _=vrep.simxSetObjectPosition(clientID,detectionObjectHandle,ps,[0,0,12],vrep.simx_opmode_oneshot_wait)
-                    return detectionObjectHandle
+            _,ps1=vrep.simxGetObjectHandle(clientID,self.bot_config['proximity_sensor_one'],vrep.simx_opmode_oneshot_wait)
+            _,detectionState1,detectionPoint1,detectionObjectHandle1,_=vrep.simxReadProximitySensor(clientID,ps1,vrep.simx_opmode_oneshot_wait)
+            _,ps2=vrep.simxGetObjectHandle(clientID,self.bot_config['proximity_sensor_two'],vrep.simx_opmode_oneshot_wait)
+            _,detectionState2,detectionPoint2,detectionObjectHandle2,_=vrep.simxReadProximitySensor(clientID,ps2,vrep.simx_opmode_oneshot_wait)
+            _,ps3=vrep.simxGetObjectHandle(clientID,self.bot_config['proximity_sensor_three'],vrep.simx_opmode_oneshot_wait)
+            _,detectionState3,detectionPoint3,detectionObjectHandle3,_=vrep.simxReadProximitySensor(clientID,ps3,vrep.simx_opmode_oneshot_wait)
+            _,ps4=vrep.simxGetObjectHandle(clientID,self.bot_config['proximity_sensor_four'],vrep.simx_opmode_oneshot_wait)
+            _,detectionState4,detectionPoint4,detectionObjectHandle4,_=vrep.simxReadProximitySensor(clientID,ps4,vrep.simx_opmode_oneshot_wait)
+            _,ps5=vrep.simxGetObjectHandle(clientID,self.bot_config['proximity_sensor_five'],vrep.simx_opmode_oneshot_wait)
+            _,detectionState5,detectionPoint5,detectionObjectHandle5,_=vrep.simxReadProximitySensor(clientID,ps5,vrep.simx_opmode_oneshot_wait)
+            dis = 10000
+            print(detectionState1,detectionState2,detectionState3, detectionState4, detectionState5)
+            if detectionState1:
+                dis = math.sqrt(detectionPoint1[0]**2+detectionPoint1[1]**2+detectionPoint1[2]**2)
+                dis1_flag = True
+            elif detectionState2:
+               dis = math.sqrt(detectionPoint2[0]**2+detectionPoint2[1]**2+detectionPoint2[2]**2)
+               dis2_flag = True
+            elif detectionState3:
+                dis = math.sqrt(detectionPoint3[0]**2+detectionPoint3[1]**2+detectionPoint3[2]**2)
+                dis3_flag = True
+            elif detectionState4:
+                dis = math.sqrt(detectionPoint4[0]**2+detectionPoint4[1]**2+detectionPoint4[2]**2)
+                dis4_flag = True
+            elif detectionState5:
+                dis = math.sqrt(detectionPoint5[0]**2+detectionPoint5[1]**2+detectionPoint5[2]**2)
+                dis5_flag = True
+
+            # print("inside pick:::: ", dis)
+            if (dis<0.3):
+                if (dis1_flag):
+                    _=vrep.simxSetObjectPosition(clientID,detectionObjectHandle1,ps1,[0,0,12],vrep.simx_opmode_oneshot_wait)
+                    return detectionObjectHandle1
+                elif dis2_flag:
+                    _=vrep.simxSetObjectPosition(clientID,detectionObjectHandle2,ps2,[0,0,12],vrep.simx_opmode_oneshot_wait)
+                    return detectionObjectHandle2
+                elif dis3_flag:
+                    _=vrep.simxSetObjectPosition(clientID,detectionObjectHandle3,ps3,[0,0,12],vrep.simx_opmode_oneshot_wait)
+                    return detectionObjectHandle3
+                elif (dis4_flag):
+                    _=vrep.simxSetObjectPosition(clientID,detectionObjectHandle4,ps4,[0,0,12],vrep.simx_opmode_oneshot_wait)
+                    return detectionObjectHandle4
+                elif (dis5_flag):
+                    _=vrep.simxSetObjectPosition(clientID,detectionObjectHandle5,ps5,[0,0,12],vrep.simx_opmode_oneshot_wait)
+                    return detectionObjectHandle5
             else :
                     print("not able to pick any block")
                     return 0
 
-    def place(self,objecthandle,port):
+    def place_b(self,objecthandle,port):
         vrep.simxFinish(-1)
         clientID=vrep.simxStart('127.0.0.1',port,True,True,5000,5)
         if clientID!=-1:
@@ -167,6 +215,8 @@ class bot:
 
     def followpath(self, path, objectHandle, port):
         vrep.simxFinish(-1)
+        print("following path")
+        
         clientID = vrep.simxStart("127.0.0.1", port, True, True, 5000, 5)
         if clientID != -1:
             prev_time = 0
@@ -200,13 +250,19 @@ class bot:
             # print(len(retFloats))
 
             while 1:
-                ultrasonic = self.stop_function(self.port)
-                check = 0
-                if ultrasonic[0] < 0.5 or ultrasonic[1] < 0.5 or ultrasonic[2] < 0.5:
-                    check = 1
-                    print("danger")
+                if objectHandle:
+                    _ = vrep.simxSetObjectPosition(
+                    clientID,
+                    picksubs,
+                    ebot,
+                    [0, 0, 0.052],
+                    vrep.simx_opmode_oneshot_wait,
+                )
+                # if ultrasonic[0] < 0.5 or ultrasonic[1] < 0.5 or ultrasonic[2] < 0.5:
+                #     check = 1
+                #     print("danger")
 
-                if check == 0:
+                # if check == 0:
 
                     # if (time.time() - prev_time) > 100:
                     #     if not flag:
@@ -215,84 +271,89 @@ class bot:
                     #         pos_on_path = 1
                     #         prev_time = time.time()
 
-                    emptyBuff = bytearray()
-                    _, _, dis, _, _ = vrep.simxCallScriptFunction(
-                        clientID,
-                        self.bot_config["script"],
-                        vrep.sim_scripttype_childscript,
-                        self.bot_config['follow'],
-                        [pos_on_path],
-                        retFloats,
-                        [],
-                        emptyBuff,
-                        vrep.simx_opmode_blocking,
+                emptyBuff = bytearray()
+                _, _, dis, _, _ = vrep.simxCallScriptFunction(
+                    clientID,
+                    self.bot_config["script"],
+                    vrep.sim_scripttype_childscript,
+                    self.bot_config['follow'],
+                    [pos_on_path],
+                    retFloats,
+                    [],
+                    emptyBuff,
+                    vrep.simx_opmode_blocking,
+                )
+                if pos_on_path >= len(retFloats):
+                        _ = vrep.simxSetJointTargetVelocity(
+                        clientID, lm, 0, vrep.simx_opmode_oneshot_wait
                     )
+                        _ = vrep.simxSetJointTargetVelocity(
+                        clientID, rm, 0, vrep.simx_opmode_oneshot_wait
+                    )
+                       
+                        break
+                
+                v_des = -0.03
+                om_des = -0.8 * dis[1]
+                d = 0.06
+                v_r = v_des + d * om_des
+                v_l = v_des - d * om_des
+                r_w = 0.0275
+                omega_right = v_r / r_w
+                omega_left = v_l / r_w
 
-                    v_des = -0.03
-                    om_des = -0.8 * dis[1]
-                    d = 0.06
-                    v_r = v_des + d * om_des
-                    v_l = v_des - d * om_des
-                    r_w = 0.0275
-                    omega_right = v_r / r_w
-                    omega_left = v_l / r_w
+                # _,_,_,_,_=vrep.simxCallScriptFunction(clientID,'Dummy',vrep.sim_scripttype_childscript,'veloctiyRos',[],[omega_right,omega_right],[],emptyBuff,vrep.simx_opmode_blocking)
+                # _ = vrep.simxCallScriptFunction(
+                #     clientID,
+                #     self.bot_config["script"],
+                #     vrep.sim_scripttype_childscript,
+                #     self.bot_config["v_manip"],
+                #     [],
+                #     [-1*omega_left, -1*omega_right],
+                #     [],
+                #     emptyBuff,
+                #     vrep.simx_opmode_blocking,
+                # )
+                _ = vrep.simxSetJointTargetVelocity(
+                    clientID, lm, (-1 * omega_left), vrep.simx_opmode_oneshot_wait
+                )
+                _ = vrep.simxSetJointTargetVelocity(
+                    clientID, rm, (-1 * omega_right), vrep.simx_opmode_oneshot_wait
+                )
 
-                    # _,_,_,_,_=vrep.simxCallScriptFunction(clientID,'Dummy',vrep.sim_scripttype_childscript,'veloctiyRos',[],[omega_right,omega_right],[],emptyBuff,vrep.simx_opmode_blocking)
-                    # _ = vrep.simxCallScriptFunction(
-                    #     clientID,
-                    #     self.bot_config["script"],
-                    #     vrep.sim_scripttype_childscript,
-                    #     self.bot_config["v_manip"],
-                    #     [],
-                    #     [-1*omega_left, -1*omega_right],
-                    #     [],
-                    #     emptyBuff,
-                    #     vrep.simx_opmode_blocking,
-                    # )
+                
+
+                # print(
+                #     math.sqrt(
+                #         (path[0] - retFloats[pos_on_path - 1]) ** 2
+                #         + (path[1] - retFloats[pos_on_path]) ** 2
+                #     )
+                
+                if (
+                    math.sqrt(
+                        (path[0] - retFloats[pos_on_path - 1]) ** 2
+                        + (path[1] - retFloats[pos_on_path]) ** 2
+                    )
+                    < 0.01
+                ):
+                
+
                     _ = vrep.simxSetJointTargetVelocity(
-                        clientID, lm, (-1 * omega_left), vrep.simx_opmode_oneshot_wait
+                        clientID, lm, 0, vrep.simx_opmode_oneshot_wait
                     )
                     _ = vrep.simxSetJointTargetVelocity(
-                        clientID, rm, (-1 * omega_right), vrep.simx_opmode_oneshot_wait
+                        clientID, rm, 0, vrep.simx_opmode_oneshot_wait
                     )
-
-                   
-
-                    print(
-                        math.sqrt(
-                            (path[0] - retFloats[pos_on_path - 1]) ** 2
-                            + (path[1] - retFloats[pos_on_path]) ** 2
-                        )
-                    )
-                    if (
-                        math.sqrt(
-                            (path[0] - retFloats[pos_on_path - 1]) ** 2
-                            + (path[1] - retFloats[pos_on_path]) ** 2
-                        )
-                        < 0.15
-                    ):
+                    print("exit")
+                    break
                     
 
-                        _ = vrep.simxSetJointTargetVelocity(
-                            clientID, lm, 0, vrep.simx_opmode_oneshot_wait
-                        )
-                        _ = vrep.simxSetJointTargetVelocity(
-                            clientID, rm, 0, vrep.simx_opmode_oneshot_wait
-                        )
-                        
-
-                        if objectHandle:
-                            _ = vrep.simxSetObjectPosition(
-                                clientID,
-                                picksubs,
-                                ebot,
-                                [0, 0, 0.052],
-                                vrep.simx_opmode_oneshot_wait,
-                            )
-                        print("exit")
-                        break
-                    if dis[0] < 0.1:
-                        pos_on_path += 3
+               
+                   
+                if dis[0] < 0.1:
+                    pos_on_path += 3
+                    # else:
+                        # pos_on_path+=1
                    
 
                 # else:
@@ -332,6 +393,7 @@ class pid:
         self.error_old = 0.0
         self.error_sum = 0.0
         self.d_error = self.error - self.error_old
+
 
     def control(self, error):
         self.error = error

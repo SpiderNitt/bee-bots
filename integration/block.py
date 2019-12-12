@@ -8,21 +8,20 @@ stakes = [10, 10, 10, 10, 10]
 majority_vote = sum(stakes) / len(stakes)
 
 
-class Block():
+class Block:
     def __init__(self, index, timestamp, data, previous_hash):
         self.is_timed_out = False
         self.index = index
         self.timestamp = timestamp
         self.data = data
         self.previous_hash = previous_hash
-        if index == 0:
-            self.pos = False
-        else:
-            self.pos = self.proof_of_stake(stakes)
+        # if index == 0:
+        # self.pos = False
+        self.pos = self.proof_of_work()
         self.hash = self.hashing()
 
-    def __iter__(self):
-        return self
+    def __iter__(self, item):
+        return self.data[item]
 
     def mytimer(self, time_limit=10.0):
         self.is_timed_out = True
@@ -60,7 +59,7 @@ class Block():
                 m.update(str(i).encode("utf-8"))
                 string = m.hexdigest()
                 if string[0:1] == "0":
-                    print("hit hit hit for", i)
+                    # print("hit hit hit for", i)
                     my_timer.cancel()
                     return i
 

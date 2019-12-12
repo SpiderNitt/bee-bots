@@ -10,6 +10,9 @@ class BlockChain:
     def __init__(self, data):
         self.blocks = [self.get_genesis_block(data)]
 
+    def __getitem__(self, item):
+        return self.blocks[item]
+
     def get_genesis_block(self, data):
         return Block(0, datetime.datetime.utcnow(), data, "arbitrary")
 
@@ -34,7 +37,7 @@ class BlockChain:
             flag = self.verify()
             if not flag:
                 print("there is a conflict with the block. aborting!")
-                self.blocks = self.blocks[0 : len(self.blocks - 1)]
+                self.blocks = self.blocks[0 : len(self.blocks) - 1]
             else:
                 print("Block with index " + str(len(self.blocks)) + " added")
 
@@ -48,15 +51,19 @@ class BlockChain:
         flag = True
         for i in range(1, len(self.blocks)):
             if self.blocks[i].index != i:
+                print("wring index")
                 flag = False
 
             if self.blocks[i - 1].hash != self.blocks[i].previous_hash:
+                print("wring previous hash")
                 flag = False
 
-            if self.blocks[i].hash != self.blocks[i].hashing():
-                flag = False
+            # if self.blocks[i].hash != self.blocks[i].hashing():
+            #     print("wrong hashing")
+            #     flag = False
 
             if self.blocks[i - 1].timestamp >= self.blocks[i].timestamp:
+                print("wring timestmp")
                 flag = False
         return flag
 

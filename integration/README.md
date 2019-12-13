@@ -1,5 +1,6 @@
 # :rocket: How to set it up:
 
+- Clone the repository and enter into the `integration` folder.
 - Open V-REP pro-edu
 - Load integration_test.ttt scene that is in this folder
 - Create a virtual environment for python3. (`pip3 install virtualenv, virtualenv -p /usr/bin/python3 env`)

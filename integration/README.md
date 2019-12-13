@@ -18,12 +18,14 @@
 
 ## :honeybee: :honeybee: What it is:
 
-- A blockchain based swarm robotics model build using V-REP (Lua), blockchain and sockets.
+- A blockchain based swarm robotics model.
 
 ## :house: Built using:
 
 - Python 3.6.8
 - V-REP
 - Lua
+- Blockchain
+- WebSockets
 
 Weaved with :spider_web: by Team Bee-Bots of [:spider:](https://spider.nitt.edu)

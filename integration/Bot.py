@@ -1,5 +1,5 @@
 import asyncio
-import websockets
+#import websockets
 import requests
 from chain import BlockChain
 from block import Block
@@ -11,7 +11,7 @@ from bot_model import bot
 import json
 from setInterval import setInterval
 import threading
-import websockets
+
 import enum
 
 # *not so sure about the import statement
@@ -66,6 +66,28 @@ block_dict = {
     #     0.05,
     # ],  # sentinel cuboid
 }
+
+#this gives the information of all the blocks and bots in the starting , should integrate with the dict praveen created.
+def scenesinit(self,port):
+        self.port=port
+        self.obstacles_handles={'x':1}
+        self.obstacles_initpos={}
+        self.obstacles_final_pos={}
+        self.scenesinit(self.port)
+
+        vrep.simxFinish(-1)
+        clientID=vrep.simxStart('127.0.0.1',port,True,True,5000,5)
+        if clientID!=-1:
+            _,handles,_,_,stringData=vrep.simxGetObjectGroupData(clientID,vrep.sim_appobj_object_type,0,vrep.simx_opmode_oneshot_wait)
+
+            for i in range(len(stringData)):
+                if stringData[i].find("Cuboid")>=0:
+                    print(stringData[i])
+                    self.obstacles_handles.update({stringData[i]:handles[i]})
+                    _,pos=vrep.simxGetObjectPosition(clientID,handles[i],-1,vrep.simx_opmode_oneshot_wait)
+                    self.obstacles_initpos.update({stringData[i]:pos})
+            return self.obstacles_handles,self.obstacles_initpos
+
 
 
 def construct_map_from_initial(block_dict):

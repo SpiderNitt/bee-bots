@@ -13,7 +13,7 @@
 
 (change configration files accordingly if ou want to add more blocks.)
 
-## What it is:
+## :honeybee: :honeybee: What it is:
 
 - A blockchain based swarm robotics model build using V-REP (Lua), blockchain and sockets.
 
@@ -23,4 +23,4 @@
 - V-REP
 - Lua
 
-Weaved with :spider_web: by Team :honeybee: Bee-Bots:honeybee: of (:spider:)[https://spider.nitt.edu]
+Weaved with :spider_web: by Team Bee-Bots of [:spider:](https://spider.nitt.edu)

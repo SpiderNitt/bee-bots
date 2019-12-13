@@ -3,7 +3,9 @@
 - Clone the repository and enter into the `integration` folder.
 - Open V-REP pro-edu
 - Load integration_test.ttt scene that is in this folder
-- Create a virtual environment for python3. (`pip3 install virtualenv, virtualenv -p /usr/bin/python3 env`)
+- Create a virtual environment for python3 by entering the following commands:
+  - `pip3 install virtualenv`
+  - `virtualenv -p /usr/bin/python3 env`
 - activate the virtual environment. (`source env/bin/activate`)
 - Install the requirements. (`pip install -r requirements.txt` ) (It can be pip here instead of pip3)
 - Run the simulation in V-REP.

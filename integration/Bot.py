@@ -1,5 +1,5 @@
 import asyncio
-#import websockets
+import websockets
 import requests
 from chain import BlockChain
 from block import Block
@@ -11,7 +11,7 @@ from bot_model import bot
 import json
 from setInterval import setInterval
 import threading
-
+import vrep
 import enum
 import socket
 
@@ -55,27 +55,18 @@ states = {
 """
 
 block_dict = {
-    "Cuboid1": [1.12500, -1.5500, 0.775, -0.05],
-    "Cuboid2": [-0.25, -1.525, -0.75, -0.3],
-    "Cuboid3": [-1.3780, -0.6912, 0.5717, -0.3162],
-    "Cuboid4": [0.9306, 1.9296, 0.5250, -0.075],
-    "Cuboid5": [-0.400, -0.550, 0.6056, 0.1296]
-    # "Cuboid14": [
-    #     -1.1749998331069946,
-    #     -1.7249996662139893,
-    #     0.02499992400407791,
-    #     0.05,
-    # ],  # sentinel cuboid
+    "Cuboid1": [0.775, -0.05],
+    "Cuboid2": [-0.75, -0.3],
+    "Cuboid3": [ 0.5717, -0.3162],
+    "Cuboid4": [ 0.5250, -0.075],
+    "Cuboid5": [ 0.6056, 0.1296]
+
 }
 
-#this gives the information of all the blocks and bots in the starting , should integrate with the dict praveen created.
-def scenesinit(self,port):
-        self.port=port
-        self.obstacles_handles={'x':1}
-        self.obstacles_initpos={}
-        self.obstacles_final_pos={}
-        self.scenesinit(self.port)
-
+def scenesinit(port):
+        obstacles_handles={'x':1}
+        obstacles_initpos={}
+        obstacles_final_pos={}
         vrep.simxFinish(-1)
         clientID=vrep.simxStart('127.0.0.1',port,True,True,5000,5)
         if clientID!=-1:
@@ -83,23 +74,23 @@ def scenesinit(self,port):
 
             for i in range(len(stringData)):
                 if stringData[i].find("Cuboid")>=0:
-                    print(stringData[i])
-                    self.obstacles_handles.update({stringData[i]:handles[i]})
+                    # print(stringData[i])
+                    obstacles_handles.update({stringData[i]:handles[i]})
                     _,pos=vrep.simxGetObjectPosition(clientID,handles[i],-1,vrep.simx_opmode_oneshot_wait)
-                    self.obstacles_initpos.update({stringData[i]:pos})
-            return self.obstacles_handles,self.obstacles_initpos
+                    obstacles_initpos.update({stringData[i]:pos})
+        return obstacles_handles,obstacles_initpos
 
 
 
-def construct_map_from_initial(block_dict):
+def construct_map_from_initial(block_dict, init_pos):
     # * state_map is the structure of a block
     state_map = dict()
     state_map["block_data"] = dict()
     for key in block_dict.keys():
 
         state_map["block_data"][key] = {
-            "current": {"x": block_dict[key][0], "y": block_dict[key][1], "z": 0.05},
-            "final": {"x": block_dict[key][2], "y": block_dict[key][3], "z": 0.05},
+            "current": {"x": init_pos[key][0], "y": init_pos[key][1], "z": init_pos[key][1]},
+            "final": {"x": block_dict[key][0], "y": block_dict[key][1], "z": init_pos[key][1]},
             "status": "idle",
         }
     state_map["total_blocks"] = len(block_dict.keys())
@@ -438,20 +429,25 @@ def bot_init(known_ports, state_map, config):
     # ebot1.place_from_other_sceme(21, [0.5, 2, 0.0])
 
 block_dict_copy = {
-    "Cuboid1": [-2.050, 1.3000, 1.500, -0.15],
-    "Cuboid2": [-1.05, -1.45, 1.500, -0.15],
-    "Cuboid3": [-2.1780, -0.7662, 1.500, -0.15],
-    "Cuboid4": [0.3750, -1.400,1.500, -0.15],
-    "Cuboid5": [0.3000, 1.3500, 1.500, -0.15],
-    "Cuboid6": [-1.72500, -1.69500,1.500, -0.15]
+    "Cuboid1": [1.500, -0.15],
+    "Cuboid2": [1.500, -0.15],
+    "Cuboid3": [ 1.500, -0.15],
+    "Cuboid4": [1.500, -0.15],
+    "Cuboid5": [1.500, -0.15],
+    "Cuboid6": [1.500, -0.15]
 }
 if __name__ == "__main__":
     filename = "bots_config.json"
+    
     known_ports = construct_known_ports(filename)
-    state_map = construct_map_from_initial(block_dict_copy)
     json_string = open(filename).read()
     bot_configs = json.loads(json_string)
+   
+
     for (i, config) in enumerate(bot_configs):
+        _,init_pos = scenesinit(config["port"])
+        # print(init_pos)
+        state_map = construct_map_from_initial(block_dict_copy, init_pos)
         if i == int(sys.argv[1]) - 1:
             bot_init(known_ports, state_map, config)
 

@@ -1,0 +1,121 @@
+
+function threadFunction(inInts,inFloats,inStrings,inBuffer)
+         sim.setJointTargetVelocity(lm,0)
+         sim.setJointTargetVelocity(rm,0)
+         global_infloats = inFloats
+         thread_flag = 1
+         initialPosition=sim.getObjectPosition(ebot,-1)
+         initialOrientation=sim.getObjectOrientation(ebot,-1)
+         
+         t=simOMPL.createTask('t')
+         ss={simOMPL.createStateSpace('2d',sim_ompl_statespacetype_dubins,sim.getObjectHandle('eBot3'),{-2.5,-2.5},{2.5,2.5},1)}
+         simOMPL.setStateSpace(t,ss)
+         simOMPL.setAlgorithm(t,simOMPL.Algorithm.RRT)
+         simOMPL.setCollisionPairs(t,{sim.getObjectHandle('eBot3'),sim.getCollectionHandle('block')})
+         startpos=sim.getObjectPosition(ebot,-1)
+         startorient=sim.getObjectOrientation(ebot,-1)
+         startpose={startpos[1],startpos[2],startorient[3]}
+         print(startpose)
+         simOMPL.setStartState(t,startpose)
+         goalpos=sim.getObjectPosition(targetHandle,-1)
+         goalorient=sim.getObjectOrientation(targetHandle,-1)
+         goalpose={goalpos[1],goalpos[2],goalorient[3]}
+         print(goalpose)
+         simOMPL.setGoalState(t,goalpose)
+         r,path=simOMPL.compute(t,4,-1,80)
+         simOMPL.destroyTask(t)
+
+      
+         
+    return {},path,{},''  
+end
+
+function publishRos(inInts,inFloats,inStrings,inBuffer)
+             
+             d={}
+             d['data']=inFloats
+             simROS.publish(publisherHandle,d)
+    return {},{},{},'' 
+end 
+
+function velocityRos(inInts,inFloats,inStrings,inBuffer)
+             d={}
+             d['data']=inFloats
+             simROS.publish(publisherHandle1,d)
+    return {},{},{},'' 
+end 
+
+
+function follow(inInts,inFloats,inStrings,inBuffer)
+            
+            path_vector={inFloats[inInts[1]],inFloats[inInts[1]+1],inFloats[inInts[1]+2]}
+            signal = 1
+            ebot=sim.getObjectHandle('eBot3')
+	        m=sim.getObjectMatrix(ebot,-1)
+            sim.invertMatrix(m)
+            path_pos=sim.multiplyVector(m,path_vector)
+            dis=math.sqrt((path_pos[2])^2+(path_pos[1])^2)
+            phi=math.atan2(path_pos[2],path_pos[1])
+            p={dis,phi}
+           
+     
+      return {},p,{},'' 
+end
+
+
+
+visualizePath=function(path)
+    if not _lineContainer then
+        _lineContainer=sim.addDrawingObject(sim.drawing_lines,3,0,-1,99999,{0.2,0.2,0.2})
+    end
+    sim.addDrawingObjectItem(_lineContainer,nil)
+    if path then
+        local pc=#path/3
+        for i=1,pc-1,1 do
+            lineDat={path[(i-1)*3+1],path[(i-1)*3+2],initialPosition[3],path[i*3+1],path[i*3+2],initialPosition[3]}
+            sim.addDrawingObjectItem(_lineContainer,lineDat)
+        end
+    end
+end
+
+
+
+function sysCall_threadmain()
+    simRemoteApi.start(20001, 1300, true)
+    robotHandle=sim.getObjectHandle('Start')
+    targetHandle=sim.getObjectHandle('End')
+    lm=sim.getObjectHandle('LeftJoint1')
+    rm=sim.getObjectHandle('RightJoint1')
+    ebot=sim.getObjectHandle('eBot3')
+    signal = 0
+    path_vector = 0
+    global_infloats = nil
+    while simGetSimulationState()~=sim_simulation_advancing_abouttostop do
+        print("inside ebot3")
+         if signal == 1 then 
+         
+            sim.setObjectPosition(robotHandle,-1,path_vector)
+        end
+        if thread_flag==1 then
+            sim.setObjectPosition(targetHandle,-1,global_infloats)
+        end
+        -- do something in here
+        simSwitchThread()
+    end
+end
+-- ADDITIONAL DETAILS:
+-- -------------------------------------------------------------------------
+-- If you wish to synchronize a threaded loop with each simulation pass,
+-- enable the explicit thread switching with 
+--
+-- sim.setThreadAutomaticSwitch(false)
+--
+-- then use
+--
+-- sim.switchThread()
+--
+-- When you want to resume execution in next simulation step (i.e. at t=t+dt)
+--
+-- sim.switchThread() can also be used normally, in order to not waste too much
+-- computation time in a given simulation step
+-- -------------------------------------------------------------------------

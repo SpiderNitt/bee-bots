@@ -11,13 +11,13 @@ import sys
 import numpy as np
 import random
 
-from pyhton import intial
+# from pyhton import intial
 #*not so sure about the import statement
 
 
 
-
-chain = BlockChain()
+data = []
+chain = BlockChain(data)
 import json
 from setInterval import setInterval
 import threading
@@ -44,8 +44,10 @@ states = {
 bot_coordinates = dict()
 # * computes euclideian distance between two points
 def euclidean_dist(c1, c2):
-    delta_x = c1["x"] - c2["x"]
-    delta_y = c1["y"] - c2["y"]
+    # delta_x = c1["x"] - c2["x"]
+    # delta_y = c1["y"] - c2["y"]
+    delta_x = 5
+    delta_y = 10
     return (delta_x ** 2 + delta_y ** 2) ** (0.5)
 
 
@@ -114,10 +116,11 @@ class Bot:
 # <<<<<<< dev_blockchain
 
         #*port is the port which the vrep simulation is running
-        scene = scene(port)
-        map = scene.scenesinit(port)
+        # scene = scene(port)
+        # map = scene.scenesinit(port)
+        map = []
 #*process map here according to req and return
-        return map/
+        return map
 # =======
         global bot_coordinates
         self.coordinates = {"x": -0.024999968707561493, "y": 0.04999999701976776}
@@ -305,7 +308,7 @@ class Bot:
 
     def main_driver(self):
 
-        inter = setInterval(1, self.get_coordinates_from_vrep)
+        inter = setInterval(1, self.get_coordinates_from_vrep())
         start_server = websockets.serve(self.bot_server, "localhost", self.port)
         t1 = threading.Thread(target=self.infinite_loop, args=[])
         t1.start()

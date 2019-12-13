@@ -8,7 +8,7 @@
     "proximity_sensor_one": "ProximitySensor",
     "proximity_sensor_two": "ProximitySensor1",
     "proximity_sensor_three": "ProximitySensor2",
-    "proximity_sensor_four": "ProximitySensor0_",
+    "proximity_sensor_four": "ProximitySensor0",
     "proximity_sensor_five": "ProximitySensor3",
     "publish_ros": "publishRos",
     "follow": "follow",

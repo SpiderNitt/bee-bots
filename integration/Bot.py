@@ -13,6 +13,7 @@ from setInterval import setInterval
 import threading
 import websockets
 import enum
+import socket
 
 # *not so sure about the import statement
 
@@ -191,6 +192,17 @@ class Bot:
         for port in self.other_ports:
             async with websockets.connect(host + str(port)) as websocket:
                 await websocket.send("block " + block_json)
+                print("data sent to port number: ", port)
+
+    def start_server_loop_in_thread(self):
+        new_loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(new_loop)
+        start_server = websockets.serve(self.bot_server, "localhost", self.port)
+        new_loop.run_until_complete(start_server)
+        new_loop.run_forever()
+       
+
+
 
     # * Gets the blockchain and updates it
     def update_blockchain(self, state):
@@ -208,7 +220,9 @@ class Bot:
         block_data[self.block["id"]] = block
         latest_copy.data["block_data"] = block_data
         self.chain.add_block(latest_copy.data)
-        # asyncio.get_event_loop().run_until_complete(self.send_block())
+        new_loop = asyncio.new_event_loop()
+        new_loop.run_until_complete(self.send_block())
+
 
     # * Returns the kth closest block to the bot
     # * Return data:
@@ -300,16 +314,16 @@ class Bot:
 
     async def bot_server(self, websocket, path):
         print("server running at port: ", self.port)
-        while True:
-            message = await websocket.recv()
-            if message[0:6] == "block ":
-                print("receiving block")
-                message = message[6:]
-                block = json.loads(message)
-                self.chain.add_block(block)
-            elif message[0:6] == "chain?":
-                chain_string = json.dumps(self.chain)
-                await websocket.send(chain_string)
+        message = await websocket.recv()
+        print("MESSAGE RECEIVED")
+        if message[0:6] == "block ":
+            print("receiving block")
+            message = message[6:]
+            block = json.loads(message)
+            self.chain.add_block(block)
+        elif message[0:6] == "chain?":
+            chain_string = json.dumps(self.chain)
+            await websocket.send(chain_string)
 
     def is_block_pickable(self):
         latest_block = self.queryBlockChain()
@@ -381,14 +395,18 @@ class Bot:
     def main_driver(self):
 
         # inter = setInterval(3, self.get_coordinates_from_vrep)
-        # start_server = websockets.serve(self.bot_server, "localhost", self.port)
+        
         t1 = threading.Thread(target=self.infinite_loop, args=[])
         t1.start()
+        t3 = threading.Thread(target=self.start_server_loop_in_thread)
+        t3.start()
         # foce_push_interval = setInterval(60, self.force_update)
-        # loop = asyncio.get_event_loop()
-        # loop.run_until_complete(start_server)
-        # loop.run_forever()
+        # TODO: FORCE PUSH
         t1.join()
+        t3.join()
+        
+        
+   
 
 
 def bot_init(known_ports, state_map, config):
@@ -398,9 +416,12 @@ def bot_init(known_ports, state_map, config):
     # ebot1.place_from_other_sceme(21, [0.5, 2, 0.0])
 
 block_dict_copy = {
-    "Cuboid1": [-.77500, -0.900, -0.128, -0.662],
-    "Cuboid2": [-0.275, -1.525, 0.122, -0.2912],
-    "Cuboid3": [-1.37800, -0.6912, 0.220, 0.2838],
+    "Cuboid1": [-2.050, 1.3000, 1.500, -0.15],
+    "Cuboid2": [-1.05, -1.45, 1.500, -0.15],
+    "Cuboid3": [-2.1780, -0.7662, 1.500, -0.15],
+    "Cuboid4": [0.3750, -1.400,1.500, -0.15],
+    "Cuboid5": [0.3000, 1.3500, 1.500, -0.15],
+    "Cuboid6": [-1.72500, -1.69500,1.500, -0.15]
 }
 if __name__ == "__main__":
     filename = "bots_config.json"

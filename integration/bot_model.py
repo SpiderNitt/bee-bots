@@ -293,7 +293,7 @@ class bot:
                        
                         break
                 
-                v_des = -0.03
+                v_des = -0.1
                 om_des = -0.8 * dis[1]
                 d = 0.06
                 v_r = v_des + d * om_des

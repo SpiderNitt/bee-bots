@@ -445,10 +445,12 @@ if __name__ == "__main__":
    
 
     for (i, config) in enumerate(bot_configs):
-        _,init_pos = scenesinit(config["port"])
+       
         # print(init_pos)
-        state_map = construct_map_from_initial(block_dict_copy, init_pos)
+       
         if i == int(sys.argv[1]) - 1:
+            _,init_pos = scenesinit(config["port"])
+            state_map = construct_map_from_initial(block_dict_copy, init_pos)
             bot_init(known_ports, state_map, config)
 
 # async def main(websocket, path):

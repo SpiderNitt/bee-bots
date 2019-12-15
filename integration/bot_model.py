@@ -107,6 +107,32 @@ class bot:
             _,rm=vrep.simxGetObjectHandle(clientID,self.bot_config['right_joint'],vrep.simx_opmode_oneshot_wait)
             _=vrep.simxSetJointTargetVelocity(clientID,lm,lmvelocity,vrep.simx_opmode_oneshot_wait)
             _=vrep.simxSetJointTargetVelocity(clientID,rm,rmvelocity,vrep.simx_opmode_oneshot_wait)
+    
+    def obstacle(self,port):
+        vrep.simxFinish(-1)
+        clientID=vrep.simxStart('127.0.0.1',port,True,True,5000,5)
+        if clientID!=-1:
+            _,ps1=vrep.simxGetObjectHandle(clientID,self.bot_config['proximity_sensor_one'],vrep.simx_opmode_oneshot_wait)
+            _,detectionState1,detectionPoint1,detectionObjectHandle1,_=vrep.simxReadProximitySensor(clientID,ps1,vrep.simx_opmode_oneshot_wait)
+            _,ps2=vrep.simxGetObjectHandle(clientID,self.bot_config['proximity_sensor_two'],vrep.simx_opmode_oneshot_wait)
+            _,detectionState2,detectionPoint2,detectionObjectHandle2,_=vrep.simxReadProximitySensor(clientID,ps2,vrep.simx_opmode_oneshot_wait)
+            _,ps3=vrep.simxGetObjectHandle(clientID,self.bot_config['proximity_sensor_three'],vrep.simx_opmode_oneshot_wait)
+            _,detectionState3,detectionPoint3,detectionObjectHandle3,_=vrep.simxReadProximitySensor(clientID,ps3,vrep.simx_opmode_oneshot_wait)
+            _,ps4=vrep.simxGetObjectHandle(clientID,self.bot_config['proximity_sensor_four'],vrep.simx_opmode_oneshot_wait)
+            _,detectionState4,detectionPoint4,detectionObjectHandle4,_=vrep.simxReadProximitySensor(clientID,ps4,vrep.simx_opmode_oneshot_wait)
+            _,ps5=vrep.simxGetObjectHandle(clientID,self.bot_config['proximity_sensor_five'],vrep.simx_opmode_oneshot_wait)
+            _,detectionState5,detectionPoint5,detectionObjectHandle5,_=vrep.simxReadProximitySensor(clientID,ps5,vrep.simx_opmode_oneshot_wait)
+
+            dis1 = math.sqrt(detectionPoint1[0]**2+detectionPoint1[1]**2+detectionPoint1[2]**2)
+            dis2 = math.sqrt(detectionPoint2[0]**2+detectionPoint2[1]**2+detectionPoint2[2]**2)
+            dis3 = math.sqrt(detectionPoint3[0]**2+detectionPoint3[1]**2+detectionPoint3[2]**2)
+            dis4 = math.sqrt(detectionPoint4[0]**2+detectionPoint4[1]**2+detectionPoint4[2]**2)
+            dis5 = math.sqrt(detectionPoint5[0]**2+detectionPoint5[1]**2+detectionPoint5[2]**2)
+
+            list1=[dis1,dis2,dis3,dis4,dis5]
+            list1.sort()
+
+            print(list1[1])
 
     def pick_b(self,port):
         dis1_flag = False
@@ -173,7 +199,7 @@ class bot:
                 _,ps=vrep.simxGetObjectHandle(clientID,self.bot_config['proximity_sensor_one'],vrep.simx_opmode_oneshot_wait)
                 _,picksubs=vrep.simxGetObjectHandle(clientID,self.bot_config['sentinel'],vrep.simx_opmode_oneshot_wait)
                 _=vrep.simxSetObjectPosition(clientID,picksubs,-1,[-2,-2,0],vrep.simx_opmode_oneshot_wait)
-                _=vrep.simxSetObjectPosition(clientID,objecthandle,ps,[0,0.3,0.2],vrep.simx_opmode_oneshot_wait)
+                _=vrep.simxSetObjectPosition(clientID,objecthandle,ps,[0.3,0.3,0.2],vrep.simx_opmode_oneshot_wait)   #change the coordinates to experiment the placement of blocks
 
     def place_block(self,port,objecthandle,position):
         vrep.simxFinish(-1)
@@ -250,6 +276,13 @@ class bot:
             # print(len(retFloats))
 
             while 1:
+
+
+                #self.obstacle(self.port)
+
+
+
+
                 if objectHandle:
                     _ = vrep.simxSetObjectPosition(
                     clientID,
@@ -293,7 +326,7 @@ class bot:
                        
                         break
                 
-                v_des = -0.1
+                v_des = -0.02
                 om_des = -0.8 * dis[1]
                 d = 0.06
                 v_r = v_des + d * om_des

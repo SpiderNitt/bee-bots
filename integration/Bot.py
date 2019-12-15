@@ -78,6 +78,7 @@ def scenesinit(port):
                     obstacles_handles.update({stringData[i]:handles[i]})
                     _,pos=vrep.simxGetObjectPosition(clientID,handles[i],-1,vrep.simx_opmode_oneshot_wait)
                     obstacles_initpos.update({stringData[i]:pos})
+            print(obstacles_initpos)
         return obstacles_handles,obstacles_initpos
 
 
@@ -385,6 +386,7 @@ class Bot:
                     time.sleep(2)
                     # print("after time sleep")
                     status = self.pick_block()
+                    print(status)
                     if status:
                         self.state = states["PICKED"]
                         self.follow_path(self.block, True)
@@ -445,10 +447,11 @@ if __name__ == "__main__":
    
 
     for (i, config) in enumerate(bot_configs):
-        _,init_pos = scenesinit(config["port"])
         # print(init_pos)
-        state_map = construct_map_from_initial(block_dict_copy, init_pos)
+        
         if i == int(sys.argv[1]) - 1:
+            _,init_pos = scenesinit(config["port"])
+            state_map = construct_map_from_initial(block_dict_copy, init_pos)
             bot_init(known_ports, state_map, config)
 
 # async def main(websocket, path):

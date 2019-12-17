@@ -14,6 +14,7 @@ import threading
 import vrep
 import enum
 import socket
+import pygraphviz as pgv
 
 # *not so sure about the import statement
 
@@ -62,6 +63,8 @@ block_dict = {
     "Cuboid5": [ 0.6056, 0.1296]
 
 }
+G = pgv.AGraph()
+
 
 def scenesinit(port):
         obstacles_handles={'x':1}
@@ -85,16 +88,32 @@ def scenesinit(port):
 
 def construct_map_from_initial(block_dict, init_pos):
     # * state_map is the structure of a block
+    localtime = time.asctime( time.localtime(time.time()) )
     state_map = dict()
     state_map["block_data"] = dict()
+    # graph_dict = state_map["block_data"]
+    # graph_dict['timestamp'] = localtime
     for key in block_dict.keys():
 
         state_map["block_data"][key] = {
             "current": {"x": init_pos[key][0], "y": init_pos[key][1], "z": init_pos[key][1]},
             "final": {"x": block_dict[key][0], "y": block_dict[key][1], "z": init_pos[key][1]},
             "status": "idle",
+
         }
+        # G.add_node(state_map["block_data"])
+    state_map["timestamp"] = time.asctime( time.localtime(time.time()) )
     state_map["total_blocks"] = len(block_dict.keys())
+    temp_string = json.dumps(state_map["block_data"])
+    print('############################################################')
+    temp = { "data" : temp_string}
+    print(temp["data"])
+    G.add_node(temp)
+    i =0
+    for key in block_dict.keys():
+        if(i>0):
+            G.add_edge(state_map["block_data"][key],state_map["block_data"][prev])
+        prev = key
     return state_map
 
 
@@ -137,7 +156,7 @@ class Bot:
         known_ports.discard(self.port)
         self.other_ports = known_ports
         self.chain = BlockChain(state_map)
-        
+
         self.vrep_port = config["port"]
         pos = self.bot_instance.Get_postiton()
         # print("this is pos in main bot: ", pos)
@@ -214,7 +233,7 @@ class Bot:
         start_server = websockets.serve(self.bot_server, "localhost", self.port)
         new_loop.run_until_complete(start_server)
         new_loop.run_forever()
-       
+
 
 
 
@@ -228,6 +247,11 @@ class Bot:
         # print("its data:: ", latest_copy.data)
         block_data = latest_copy.data["block_data"]
         block = block_data[self.block["id"]]
+        print("!!!!!!!!!!!!!!----------BLOCKCHAIN UPDATED-------------!!!!!!!!!!!!!!!!!!!!")
+        data_str = json.dumps(block_data)
+        data_dict = {"data":data_str}
+        G.add_node(data_dict)
+        print(data_dict["data"])
         block["status"] = state
         # block["current"]["x"] = self.coordinates["x"]
         # block["current"]["y"] = self.coordinates["y"]
@@ -236,7 +260,8 @@ class Bot:
         self.chain.add_block(latest_copy.data)
         new_loop = asyncio.new_event_loop()
         new_loop.run_until_complete(self.send_block())
-
+        G.layout()
+        G.draw('blockchain_plot.png')
 
     # * Returns the kth closest block to the bot
     # * Return data:
@@ -285,7 +310,7 @@ class Bot:
 
     # * chooses a block and tries to pick it
     def choose_block(self):
-        
+
         length = 0
         latest_block = self.queryBlockChain()
         # print(latest_block)
@@ -315,7 +340,7 @@ class Bot:
         return False
 
     def pick_block(self):
-       
+
         self.bot_instance.pick()
         if self.bot_instance.objectPicked !=0:
          self.update_blockchain(states["PICKED"])
@@ -410,7 +435,7 @@ class Bot:
     def main_driver(self):
 
         # inter = setInterval(3, self.get_coordinates_from_vrep)
-        
+
         t1 = threading.Thread(target=self.infinite_loop, args=[])
         t1.start()
         t3 = threading.Thread(target=self.start_server_loop_in_thread)
@@ -419,9 +444,9 @@ class Bot:
         # TODO: FORCE PUSH
         t1.join()
         t3.join()
-        
-        
-   
+
+
+
 
 
 def bot_init(known_ports, state_map, config):
@@ -440,20 +465,20 @@ block_dict_copy = {
 }
 if __name__ == "__main__":
     filename = "bots_config.json"
-    
+
     known_ports = construct_known_ports(filename)
     json_string = open(filename).read()
     bot_configs = json.loads(json_string)
-   
+
 
     for (i, config) in enumerate(bot_configs):
 #<<<<<<< HEAD
         # print(init_pos)
-        
+
 #=======
-       
-       
-       
+
+
+
 #>>>>>>> 47e38c856ae8f050d86568cb0f03117a2dff0eb7
         if i == int(sys.argv[1]) - 1:
             _,init_pos = scenesinit(config["port"])

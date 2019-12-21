@@ -11,8 +11,9 @@
 - Install the requirements. (`pip install -r requirements.txt` ) (It can be pip here instead of pip3)
 - Run the simulation in V-REP.
 - Run the following command. (`python Bot.py 1`)
-- The number after Bot.py is the number of the bot that you are initialising. To run second bot, you have to do `python Bot.py 2` in another terminal.
-- The scene supports 3 bots. So create three different terminals, and run `python Bot.py <bot-number>` in each.
+- The number after Bot.py is the number of the bot that you are initialising. To run second bot, you have to do `python Bot.py 2` in another terminals.
+- The scene supports 5 bots. So create three different terminals, and run `python Bot.py <bot-number>` in each.
+- Also make use of ./bee.sh ( edit accordingly to run as many bots you need )
 - Watch the bees do their job.
 
 (change configration files accordingly if ou want to add more blocks.)

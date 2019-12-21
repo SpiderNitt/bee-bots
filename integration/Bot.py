@@ -478,18 +478,7 @@ if __name__ == "__main__":
 
 
     for (i, config) in enumerate(bot_configs):
-#<<<<<<< HEAD
 
-#=======
-#<<<<<<< HEAD
-        # print(init_pos)
-
-#=======
-
-
-
-#>>>>>>> 47e38c856ae8f050d86568cb0f03117a2dff0eb7
-#>>>>>>> 117d641fcce7ebf6eb13d891824e7a4d44509420
         if i == int(sys.argv[1]) - 1:
             _,init_pos = scenesinit(config["port"])
             state_map = construct_map_from_initial(block_dict_copy, init_pos)

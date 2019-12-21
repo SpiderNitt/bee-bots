@@ -59,7 +59,10 @@ block_dict = {
     "Cuboid2": [-0.75, -0.3],
     "Cuboid3": [ 0.5717, -0.3162],
     "Cuboid4": [ 0.5250, -0.075],
-    "Cuboid5": [ 0.6056, 0.1296]
+    "Cuboid5": [ 0.6056, 0.1296],
+    "Cuboid6": [ 0.6056, 0.1296],
+    "Cuboid7": [ 0.6056, 0.1296],
+    "Cuboid8": [ 0.6056, 0.1296],
 
 }
 
@@ -203,6 +206,7 @@ class Bot:
     async def send_block(self):
         print("sending block to all other ports: ")
         block_json = self.prepare_to_send()
+	#self.other_ports=null
         for port in self.other_ports:
             async with websockets.connect(host + str(port)) as websocket:
                 await websocket.send("block " + block_json)
@@ -436,7 +440,9 @@ block_dict_copy = {
     "Cuboid3": [ 1.500, -0.15],
     "Cuboid4": [1.500, -0.15],
     "Cuboid5": [1.500, -0.15],
-    "Cuboid6": [1.500, -0.15]
+    "Cuboid6": [1.500, -0.15],
+    "Cuboid7": [ 1.500, -0.15],
+    "Cuboid8": [ 1.500, -0.15]
 }
 if __name__ == "__main__":
     filename = "bots_config.json"
@@ -447,14 +453,7 @@ if __name__ == "__main__":
    
 
     for (i, config) in enumerate(bot_configs):
-#<<<<<<< HEAD
-        # print(init_pos)
-        
-#=======
-       
-       
-       
-#>>>>>>> 47e38c856ae8f050d86568cb0f03117a2dff0eb7
+
         if i == int(sys.argv[1]) - 1:
             _,init_pos = scenesinit(config["port"])
             state_map = construct_map_from_initial(block_dict_copy, init_pos)
@@ -472,8 +471,7 @@ if __name__ == "__main__":
 #             chain = updated_chain
 
 
-# =======
-# >>>>>>> master
+
 """state_map = {
  "block_data": [
         {"id": 123, "curr_x": 123,"curr_y"=123, "final_coordinates": 123,"status" : "picked", "owner_bot_id":123}

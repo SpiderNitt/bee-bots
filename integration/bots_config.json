@@ -1,11 +1,12 @@
-[
-
+[  
+  
   {
     "bot": "eBot3",
     "script": "eBot3",
     "thread_function": "threadFunction",
     "left_joint": "LeftJoint#1",
     "right_joint": "RightJoint#1",
+    "proximity_bot": "Proximity_sensor#2",
     "proximity_sensor_one": "ProximitySensor#1",
     "proximity_sensor_two": "ProximitySensor1#1",
     "proximity_sensor_three": "ProximitySensor2#1",
@@ -25,6 +26,7 @@
     "thread_function": "threadFunction",
     "left_joint": "LeftJoint#0",
     "right_joint": "RightJoint#0",
+    "proximity_bot": "Proximity_sensor#3",
     "proximity_sensor_one": "ProximitySensor#0",
     "proximity_sensor_two": "ProximitySensor1#0",
     "proximity_sensor_three": "ProximitySensor2#0",
@@ -39,58 +41,17 @@
     "port_socket": 8754
   },
   {
-    "bot": "eBot4",
-    "script": "eBot4",
-    "thread_function": "threadFunction",
-    "left_joint": "LeftJoint#4",
-    "right_joint": "RightJoint#4",
-    "proximity_sensor_one": "ProximitySensor#4",
-    "proximity_sensor_two": "ProximitySensor1#4",
-    "proximity_sensor_three": "ProximitySensor2#4",
-    "proximity_sensor_four": "ProximitySensor0#4",
-    "proximity_sensor_five": "ProximitySensor3#4",
-    
-    "publish_ros": "publishRos",
-    "follow": "follow",
-    "v_manip": "velocitymanip",
-    "start": "Start",
-    "end": "End",
-    "sentinel": "Cuboid17",
-    "port": 20002,
-    "port_socket": 8752
-  },
-  {
-    "bot": "eBot5",
-    "script": "eBot5",
-    "thread_function": "threadFunction",
-    "left_joint": "LeftJoint#5",
-    "right_joint": "RightJoint#5",
-    "proximity_sensor_one": "ProximitySensor#5",
-    "proximity_sensor_two": "ProximitySensor1#5",
-    "proximity_sensor_three": "ProximitySensor2#5",
-    "proximity_sensor_four": "ProximitySensor0#5",
-    "proximity_sensor_five": "ProximitySensor3#5",
-    "publish_ros": "publishRos",
-    "follow": "follow",
-    "v_manip": "velocitymanip",
-    "start": "Start",
-    "end": "End",
-    "sentinel": "Cuboid18",
-    "port": 20003,
-    "port_socket": 8751
-  },
-{
     "bot": "eBot1",
     "script": "eBot1",
     "thread_function": "threadFunction",
     "left_joint": "LeftJoint",
     "right_joint": "RightJoint",
+    "proximity_bot": "Proximity_sensor#4",
     "proximity_sensor_one": "ProximitySensor",
     "proximity_sensor_two": "ProximitySensor1",
     "proximity_sensor_three": "ProximitySensor2",
     "proximity_sensor_four": "ProximitySensor0",
     "proximity_sensor_five": "ProximitySensor3",
-    "proximity_bot":"ProximitySensor4",
     "publish_ros": "publishRos",
     "follow": "follow",
     "v_manip": "velocitymanip",
@@ -100,4 +61,5 @@
     "port": 19999,
     "port_socket": 8755
   }
+
 ]

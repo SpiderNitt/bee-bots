@@ -1,5 +1,6 @@
 #include <PID_v1.h>
 #include <Arduino.h>
+#include <Servo.h>
 
 #define RADIUS 0.036
 #define LENGTH 0.325
@@ -26,6 +27,9 @@ int start = 0;
 /*Position control*/
 float posX = 0, posY = 0, orientation = 0;
 float targetPosX = 0, targetPosY = 0, targetOrientation = 0, finalOrientation = 0;
+float currentDistance = 0, targetDistance = 0;
+
+Servo arm;
 
 enum State
 {
@@ -35,8 +39,8 @@ enum State
 } currentState = IDLE;
 
 /*Control Parameters */
-float Kpl = 2, Kil = 9, Kdl = 0.1; ///left
-float Kpr = 2, Kir = 9, Kdr = 0.1; //right
+float Kpl = 1, Kil = 9, Kdl = 0.01; ///left
+float Kpr = 1, Kir = 8, Kdr = 0.01; //right
 float p_el = 0, p_er = 0;
 float sm_el = 0, sm_er = 0;
 int out_max = 255, out_min = 0;
@@ -109,6 +113,8 @@ void configureLeftPID() {
 
 void setup()
 {
+
+	Serial.begin(9600);
 	float flusher = 3.14;
 	pinMode(rm1, OUTPUT);
 	pinMode(rm2, OUTPUT);
@@ -120,10 +126,14 @@ void setup()
 	pinMode(ENCODER_LEFT_PIN, INPUT);
 	attachInterrupt(digitalPinToInterrupt(ENCODER_RIGHT_PIN), pulseRight, RISING);
 	attachInterrupt(digitalPinToInterrupt(ENCODER_LEFT_PIN), pulseLeft, RISING);
+
+	// configureRightPID();
+
 	pidRight.SetMode(AUTOMATIC);
 	pidLeft.SetMode(AUTOMATIC);
 
-	Serial.begin(9600);
+	arm.attach(2);
+	arm.write(0);
 }
 
 void forward()
@@ -193,6 +203,7 @@ void updatePosition()
 	float distanceTravelled = (lpos + rpos) / 2 * deltaTime * rpm * wheelRadius * 2 * PI;
 	float angleTurned = (rpos - lpos) / 2 * deltaTime * rpm * 2 * PI / 60;
 	float angle = angleTurned * wheelRadius * 2 / axleLength;
+	currentDistance += distanceTravelled;
 
 	orientation += angle;
 	if (orientation > 2 * PI)
@@ -256,6 +267,8 @@ void setTarget(float x, float y, float o)
 	targetPosY = y;
 	finalOrientation = o;
 	findAngle();
+	targetDistance = distanceToTarget();
+	currentDistance = 0;
 
 	currentState = TURNING_TO_FACE_TARGET;
 }
@@ -318,7 +331,7 @@ void loop()
 		}
 		break;
 	case MOVING_TOWARDS_TARGET:
-		if (distanceToTarget() > 1000) {
+		if (currentDistance < targetDistance) {
 			forward();
 		}
 		else {
@@ -328,6 +341,8 @@ void loop()
 		break;
 	}
 
+	static int angle = 0;
+
 	if (Serial.available()) {
 		char c = Serial.read();
 		switch(c) {
@@ -335,10 +350,38 @@ void loop()
 				setTarget(0, 10, PI/2);
 			break;
 			case '0':
-				forward();
+				angle = max(angle-10, 0);
+				arm.write(angle);
+			break;
+			case '2':
+				angle = min(angle+10, 180);
+				arm.write(angle);
 			break;
 		}
 	}
+
+	// Serial.print("lrpm: ");
+	// Serial.print(lrpm);
+	// Serial.print("\t\t");
+	// Serial.print("rrpm: ");
+	// Serial.print(rrpm);
+
+	// Serial.print("\t");
+	// Serial.print(leftTicks);
+	// Serial.print("\t");
+	// Serial.println(pidRightCorrection);
+	// Serial.println(angle);
+
+	Serial.print(states[currentState]);
+	Serial.print("\t");
+	Serial.print(orientation);
+	Serial.print("/");
+	Serial.print(targetOrientation);
+	Serial.print("\t");
+	Serial.print(currentDistance);
+	Serial.print("/");
+	Serial.print(targetDistance);
+	Serial.print("\n");
 
 	delay(10);
 }

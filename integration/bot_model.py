@@ -239,21 +239,21 @@ class bot:
                             vrep.simx_opmode_oneshot_wait,
                         )
 
-                        if self.stop_function(self.port,self.clientID):
-                                _ = vrep.simxSetJointTargetVelocity(
-                                self.clientID, lm, 10, vrep.simx_opmode_oneshot_wait
-                            )
-                                _ = vrep.simxSetJointTargetVelocity(
-                                self.clientID, rm, 2, vrep.simx_opmode_oneshot_wait
-                            )
+                        #if self.stop_function(self.port,self.clientID):
+                        #        _ = vrep.simxSetJointTargetVelocity(
+                        #        self.clientID, lm, 10, vrep.simx_opmode_oneshot_wait
+                        #    )
+                        #        _ = vrep.simxSetJointTargetVelocity(
+                        #        self.clientID, rm, 2, vrep.simx_opmode_oneshot_wait
+                        #    )
 
-                                pos_on_path = 1
-                                emptyBuff = bytearray()
-                                _,_,retFloats,_,_=vrep.simxCallScriptFunction(
-                                self.clientID,self.bot_config['script'],vrep.sim_scripttype_childscript,
-                                self.bot_config["thread_function"],[],path,[],
-                                emptyBuff,vrep.simx_opmode_oneshot_wait
-                            )
+                        #        pos_on_path = 1
+                        #        emptyBuff = bytearray()
+                        #        _,_,retFloats,_,_=vrep.simxCallScriptFunction(
+                        #        self.clientID,self.bot_config['script'],vrep.sim_scripttype_childscript,
+                        #        self.bot_config["thread_function"],[],path,[],
+                        #        emptyBuff,vrep.simx_opmode_oneshot_wait
+                        #    )
                             
                         
                         emptyBuff = bytearray()

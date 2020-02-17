@@ -18,12 +18,6 @@ class Motor {
     const pin BIN2 = 36;
     const pin PWMB = 12;
 
-    
-
-    const float TICKS_PER_REV = 3690.0;
-
-    //bool enabled;
-
 #ifdef LEFTMOTOR_A
     const pin &leftFront = AIN1;
     const pin &rightFront = BIN1;
@@ -45,24 +39,17 @@ class Motor {
 #endif
 
 public:
-    float lrpm;
-    float rrpm;
-    volatile unsigned leftTicks;
-    volatile unsigned righTicks;
     enum Direction {STOP=0,FRONT=1,BACK=-1};
 
     Direction lpos = STOP;
     Direction rpos = STOP;
 
-    Motor(void(*fun)(), void(*fun2)());
+    Motor();
     void forward();
     void reverse();
     void leftturn();
     void rightturn();
     void brake();
-    void computeRPM();
-    void incrementleftticks();
-    void incrementrightticks();
     void setleftspeed(int);
     void setrightspeed(int);
 };

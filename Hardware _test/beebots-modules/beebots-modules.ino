@@ -2,19 +2,20 @@
 #include <Arduino.h>
 #include <Servo.h>
 
+#include "src/motor.h"
+#include "src/encoders.h"
+
 #define RADIUS 0.036
 #define LENGTH 0.325
 #define UINT_MAX 4294967295
 #define TICKS_PER_REV 3690.0
 #define ENCODER_LEFT_PIN 19
-#define ENCODER_RIGHT_PIN 18
+#define ENCODER_RIGHT_PIN 21
 #define POSITION_COMPUTE_INTERVAL 150
 #define SEND_INTERVAL 100
-#define TARGET_RPM 100
+#define TARGET_RPM 150
 
 bool set_;
-int rm1 = 33, rm2 = 34, rme = 11, lm1 = 35, lm2 = 36, lme = 12;
-int renc = 18, lenc = 19;
 double set = 100, lrpm, rrpm;
 int lpos, rpos;
 double pidRightCorrection, pidLeftCorrection;
@@ -30,6 +31,8 @@ float targetPosX = 0, targetPosY = 0, targetOrientation = 0, finalOrientation = 
 float currentDistance = 0, targetDistance = 0;
 
 Servo arm;
+Motor motor;
+
 
 enum State
 {
@@ -48,8 +51,12 @@ int out_max = 255, out_min = 0;
 PID pidRight(&rrpm, &pidRightCorrection, &set, Kpr, Kir, Kdr, DIRECT);
 PID pidLeft(&lrpm, &pidLeftCorrection, &set, Kpl, Kil, Kdl, DIRECT);
 
-void pulseLeft() { leftTicks++; }
-void pulseRight() { rightTicks++; }
+void pulseLeft();
+void pulseRight();
+
+Encoders encoders(pulseLeft, pulseRight);
+void pulseLeft() { encoders.incrementleftticks(); }
+void pulseRight() { encoders.incrementrightticks(); }
 
 char states[][10] {
 	"IDLE", 
@@ -116,16 +123,6 @@ void setup()
 
 	Serial.begin(9600);
 	float flusher = 3.14;
-	pinMode(rm1, OUTPUT);
-	pinMode(rm2, OUTPUT);
-	pinMode(rme, OUTPUT);
-	pinMode(lm1, OUTPUT);
-	pinMode(lm2, OUTPUT);
-	pinMode(lme, OUTPUT);
-	pinMode(ENCODER_RIGHT_PIN, INPUT);
-	pinMode(ENCODER_LEFT_PIN, INPUT);
-	attachInterrupt(digitalPinToInterrupt(ENCODER_RIGHT_PIN), pulseRight, RISING);
-	attachInterrupt(digitalPinToInterrupt(ENCODER_LEFT_PIN), pulseLeft, RISING);
 
 	// configureRightPID();
 
@@ -134,54 +131,10 @@ void setup()
 
 	arm.attach(2);
 	arm.write(0);
+
+	motor.forward();
 }
 
-void forward()
-{
-	lpos = rpos = 1;
-	digitalWrite(lm1, HIGH);
-	digitalWrite(lm2, LOW);
-	digitalWrite(rm1, HIGH);
-	digitalWrite(rm2, LOW);
-}
-
-void reverse()
-{
-	lpos = rpos = -1;
-	digitalWrite(lm2, HIGH);
-	digitalWrite(lm1, LOW);
-	digitalWrite(rm2, HIGH);
-	digitalWrite(rm1, LOW);
-}
-
-void leftturn()
-{
-	lpos = -1;
-	rpos = 1;
-	digitalWrite(lm2, HIGH);
-	digitalWrite(lm1, LOW);
-	digitalWrite(rm1, HIGH);
-	digitalWrite(rm2, LOW);
-}
-
-void rightturn()
-{
-	rpos = -1;
-	lpos = 1;
-	digitalWrite(lm1, HIGH);
-	digitalWrite(lm2, LOW);
-	digitalWrite(rm2, HIGH);
-	digitalWrite(rm1, LOW);
-}
-
-void brake()
-{
-	lpos = rpos = 0;
-	digitalWrite(lm1, HIGH);
-	digitalWrite(lm2, HIGH);
-	digitalWrite(rm2, HIGH);
-	digitalWrite(rm1, HIGH);
-}
 
 unsigned long getElapsedTime(unsigned long prevTime)
 {
@@ -273,21 +226,6 @@ void setTarget(float x, float y, float o)
 	currentState = TURNING_TO_FACE_TARGET;
 }
 
-void computeRPM()
-{
-	static unsigned long prevTime = millis();
-	float elapsedTime = (millis() - prevTime) / 1000.0f;
-	if (elapsedTime > 0)
-	{
-		lrpm = leftTicks * 60.0f / (TICKS_PER_REV * elapsedTime);
-		rrpm = rightTicks * 60.0f / (TICKS_PER_REV * elapsedTime);
-	}
-
-	prevTime = millis();
-	leftTicks = 0;
-	rightTicks = 0;
-}
-
 float distanceToTarget() {
 	return sqrt(square(posY - targetPosY) - square(posX - targetPosX));
 } 
@@ -300,12 +238,12 @@ void loop()
 	pidRightCorrection = round(pidRightCorrection);
 	pidLeftCorrection = round(pidLeftCorrection);
 
-	analogWrite(lme, pidRightCorrection);
-	analogWrite(rme, pidLeftCorrection);
+    motor.setleftspeed(pidLeftCorrection);
+    motor.setrightspeed(pidRightCorrection);
 
 	if (millis() - prevPositionComputeTime > POSITION_COMPUTE_INTERVAL)
 	{
-		computeRPM();
+		encoders.computeRPM();
 		prevPositionComputeTime = millis();
 	}
 
@@ -323,19 +261,19 @@ void loop()
 
 		if (abs(orientation - targetOrientation) > 0.1)
 		{
-			leftturn();
+			motor.leftturn();
 		}
 		else {
-			brake();
+			motor.brake();
 			currentState = MOVING_TOWARDS_TARGET;
 		}
 		break;
 	case MOVING_TOWARDS_TARGET:
 		if (currentDistance < targetDistance) {
-			forward();
+			motor.forward();
 		}
 		else {
-			brake();
+			motor.brake();
 			currentState = IDLE;
 		}
 		break;
@@ -372,16 +310,17 @@ void loop()
 	// Serial.println(pidRightCorrection);
 	// Serial.println(angle);
 
-	Serial.print(states[currentState]);
-	Serial.print("\t");
-	Serial.print(orientation);
-	Serial.print("/");
-	Serial.print(targetOrientation);
-	Serial.print("\t");
-	Serial.print(currentDistance);
-	Serial.print("/");
-	Serial.print(targetDistance);
-	Serial.print("\n");
+	//Serial.print(states[currentState]);
+	//Serial.print("\t");
+	//Serial.print(orientation);
+	//Serial.print("/");
+	//Serial.print(targetOrientation);
+	//Serial.print("\t");
+	//Serial.print(currentDistance);
+	//Serial.print("/");
+	//Serial.print(targetDistance);
+	//Serial.print("\n");
+	Serial.println(encoders.lrpm );
 
 	delay(10);
 }

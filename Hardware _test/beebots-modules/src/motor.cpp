@@ -1,9 +1,8 @@
-
-#include "Motor.h"
+#include "motor.h"
 #include <Arduino.h>
 
 
-Motor::Motor(void(*fun)(),void(*fun2)()) 
+Motor::Motor() 
 {
     pinMode(leftFront, OUTPUT);
     pinMode(leftBack, OUTPUT);
@@ -64,15 +63,6 @@ void Motor::brake()
 
 }
 
-void Motor::incrementleftticks()
-{
-    leftTicks++;
-}
-
-void Motor::incrementrightticks()
-{
-    righTicks++;
-}
 
 void Motor::setleftspeed(int left)
 {
@@ -84,21 +74,6 @@ void Motor::setrightspeed(int right)
     analogWrite(rightSpeed,right);
 }
 
-void Motor::computeRPM()
-{
-    static unsigned long prevTime = millis();
-    float elapsedTime = (millis() - prevTime) / 1000.0f;
-    if (elapsedTime>0)
-    {
-        lrpm = leftTicks * 60.0f / (TICKS_PER_REV * elapsedTime);
-        rrpm = righTicks * 60.0f / (TICKS_PER_REV * elapsedTime);
-
-    }
-
-    prevTime = millis();
-    leftTicks = 0;
-    righTicks = 0;
-}
 
 
 

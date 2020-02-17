@@ -132,7 +132,7 @@ void setup()
 	arm.attach(2);
 	arm.write(0);
 
-	motor.forward();
+	motor.leftturn();
 }
 
 

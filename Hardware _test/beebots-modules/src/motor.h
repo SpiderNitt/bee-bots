@@ -12,30 +12,30 @@ class Motor {
     
     //const pin STBY = 13;
     const pin PWMA = 11;
-    const pin AIN2 = 34;
-    const pin AIN1 = 33;
-    const pin BIN1 = 35;
-    const pin BIN2 = 36;
-    const pin PWMB = 12;
+    const pin AIN2 = 10;
+    //const pin AIN1 = 33;
+    //const pin BIN1 = 35;
+    const pin BIN2 = 3;
+    const pin PWMB = 9;
 
 #ifdef LEFTMOTOR_A
-    const pin &leftFront = AIN1;
-    const pin &rightFront = BIN1;
+    //const pin &leftFront = AIN1;
+    //const pin &rightFront = BIN1;
 
-    const pin &leftBack = AIN2;
-    const pin &rightBack = BIN2;
+    const pin &leftdir = AIN2;
+    const pin &rightdir = BIN2;
 
-    const pin &leftSpeed = PWMA;
-    const pin &rightSpeed = PWMB;
+    const pin &leftpwm = PWMA;
+    const pin &rightpwm = PWMB;
 #else
-    const pin &leftFront = BIN1;
-    const pin &rightFront = AIN1;
+    //const pin &leftFront = BIN1;
+    //const pin &rightFront = AIN1;
 
-    const pin &leftBack = BIN2;
-    const pin &rightBack = AIN2;
+    const pin &leftdir = BIN2;
+    const pin &rightdir = AIN2;
 
-    const pin &leftSpeed = PWMB;
-    const pin &rightSpeed = PWMA;
+    const pin &leftpwm = PWMB;
+    const pin &rightpwm = PWMA;
 #endif
 
 public:

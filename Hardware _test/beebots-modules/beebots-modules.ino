@@ -42,8 +42,8 @@ enum State
 } currentState = IDLE;
 
 /*Control Parameters */
-float Kpl = 1, Kil = 9, Kdl = 0.01; ///left
-float Kpr = 1, Kir = 8, Kdr = 0.01; //right
+float Kpl = 1.42, Kil = 0.00, Kdl = 0; ///left
+float Kpr = 1.35, Kir = 0.00, Kdr = 0; //right
 float p_el = 0, p_er = 0;
 float sm_el = 0, sm_er = 0;
 int out_max = 255, out_min = 0;
@@ -132,17 +132,11 @@ void setup()
 	arm.attach(2);
 	arm.write(0);
 
-	motor.leftturn();
+	//motor.forward();
 }
 
 
-unsigned long getElapsedTime(unsigned long prevTime)
-{
-	unsigned long currentTime = micros();
-	if (currentTime < prevTime)
-		return UINT_MAX - prevTime + currentTime;
-	return currentTime - prevTime;
-}
+
 
 void updatePosition()
 {
@@ -151,10 +145,10 @@ void updatePosition()
 
 	static float prevTime = micros();
 	float deltaTime = (micros() - prevTime) / 1000000.0f;
-	float rpm = (lrpm + rrpm) / 2;
+	float rpm = (encoders.lrpm + encoders.rrpm) / 2;
 
-	float distanceTravelled = (lpos + rpos) / 2 * deltaTime * rpm * wheelRadius * 2 * PI;
-	float angleTurned = (rpos - lpos) / 2 * deltaTime * rpm * 2 * PI / 60;
+	float distanceTravelled = (motor.lpos + motor.rpos) / 2 * deltaTime * rpm * wheelRadius * 2 * PI;
+	float angleTurned = (motor.rpos - motor.lpos) / 2 * deltaTime * rpm * 2 * PI / 60;
 	float angle = angleTurned * wheelRadius * 2 / axleLength;
 	currentDistance += distanceTravelled;
 
@@ -232,6 +226,8 @@ float distanceToTarget() {
 
 void loop()
 {
+  if  (currentState != IDLE) 
+  { 
 	pidRight.Compute();
 	pidLeft.Compute();
 
@@ -246,9 +242,10 @@ void loop()
 		encoders.computeRPM();
 		prevPositionComputeTime = millis();
 	}
+  }
 
 	updatePosition();
-	//printPosition();
+	printPosition();
 	
 
 	switch (currentState)
@@ -274,6 +271,7 @@ void loop()
 		}
 		else {
 			motor.brake();
+      Serial.print("brake");
 			currentState = IDLE;
 		}
 		break;
@@ -285,7 +283,7 @@ void loop()
 		char c = Serial.read();
 		switch(c) {
 			case '1':
-				setTarget(0, 10, PI/2);
+				setTarget(0, 100, 0);
 			break;
 			case '0':
 				angle = max(angle-10, 0);
@@ -319,8 +317,10 @@ void loop()
 	//Serial.print(currentDistance);
 	//Serial.print("/");
 	//Serial.print(targetDistance);
-	//Serial.print("\n");
-	Serial.println(encoders.lrpm );
+	//Serial.print("rrpm:");
+	//Serial.println(encoders.rrpm );
+  //Serial.print("lrpm");
+  //Serial.println(encoders.lrpm );
 
 	delay(10);
 }

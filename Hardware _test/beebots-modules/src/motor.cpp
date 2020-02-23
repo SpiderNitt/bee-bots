@@ -54,10 +54,10 @@ void Motor::brake()
 {
     lpos=STOP;
     rpos=STOP;
-    digitalWrite(leftpwm,HIGH);
-    digitalWrite(leftdir,HIGH);
-    digitalWrite(rightpwm,HIGH);
-    digitalWrite(rightdir,HIGH);
+    digitalWrite(leftpwm,LOW);
+    digitalWrite(leftdir,LOW);
+    digitalWrite(rightpwm,LOW);
+    digitalWrite(rightdir,LOW);
 
 }
 

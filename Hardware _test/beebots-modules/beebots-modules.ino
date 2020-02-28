@@ -139,7 +139,7 @@ void setup()
 	Twiddle::autoTune(lrpm, set, pidLeft, pidLeftCorrection, &Motor::setleftspeed, &motor);
 	motor.setrightspeed(0);
 	motor.setleftspeed(0);
-	Serial::println("right");
+	Serial.println("right");
 	Twiddle::autoTune(rrpm, set, pidRight, pidRightCorrection, &Motor::setrightspeed, &motor);
 	motor.setrightspeed(0);
 	motor.setleftspeed(0);

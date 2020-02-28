@@ -48,5 +48,6 @@ void Twiddle::autoTune(double& rpm, double set, PID& pid, double& correction, vo
             }
         }
         sum = (dp[0] +dp[1] + dp[2]); 
+        Serial.println(sum);
     }   
 }

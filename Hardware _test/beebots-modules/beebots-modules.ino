@@ -136,11 +136,11 @@ void setup()
 	motor.setrightspeed(0);
 	motor.setleftspeed(0);
 	Serial.println("left");
-	Twiddle::autoTune(lrpm, set, pidLeft, pidLeftCorrection, &Motor::setleftspeed, &motor);
+	Twiddle::autoTune(lrpm, set, pidLeft, pidLeftCorrection, &Motor::setleftspeed, &motor, encoders);
 	motor.setrightspeed(0);
 	motor.setleftspeed(0);
 	Serial.println("right");
-	Twiddle::autoTune(rrpm, set, pidRight, pidRightCorrection, &Motor::setrightspeed, &motor);
+	Twiddle::autoTune(rrpm, set, pidRight, pidRightCorrection, &Motor::setrightspeed, &motor, encoders);
 	motor.setrightspeed(0);
 	motor.setleftspeed(0);
 

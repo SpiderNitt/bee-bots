@@ -4,6 +4,7 @@
 
 #include "src/motor.h"
 #include "src/encoders.h"
+#include "src/twiddle.h"
 
 #define RADIUS 0.036
 #define LENGTH 0.325
@@ -131,10 +132,18 @@ void setup()
 
 	arm.attach(2);
 	arm.write(0);
+	
+	motor.setrightspeed(0);
+	motor.setleftspeed(0);
+	Twiddle::autoTune(lrpm, set, pidLeft, pidLeftCorrection, Motor::setleftspeed, &motor);
+	motor.setrightspeed(0);
+	motor.setleftspeed(0);
+	Twiddle::autoTune(rrpm, set, pidRight, pidRightCorrection, Motor::setrightspeed, &motor);
+	motor.setrightspeed(0);
+	motor.setleftspeed(0);
 
 	//motor.forward();
 }
-
 
 
 

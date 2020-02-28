@@ -28,6 +28,9 @@ void Twiddle::autoTune(double& rpm, double set, PID& pid, double& correction, vo
             (motor->*setSpeed)(correction);
             
             err = abs(set - rpm);
+            Serial.print("error: ");
+            Serial.println(err);
+
             if (err < best_err) {
                 best_err = err;
                 dp[i] *= 1.1;
@@ -37,6 +40,8 @@ void Twiddle::autoTune(double& rpm, double set, PID& pid, double& correction, vo
                 pid.Compute();
                 (motor->*setSpeed)(correction);
                 err = abs(set - rpm);
+                Serial.print("error: ");
+                Serial.println(err);
 
                 if (err < best_err) {
                     best_err = err;

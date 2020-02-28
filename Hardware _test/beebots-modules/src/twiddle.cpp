@@ -1,5 +1,6 @@
 #include "twiddle.h"
 #include "motor.h"
+#include "encoders.h"
 
 #include <PID_v1.h>
 #include <stdlib.h>
@@ -7,7 +8,7 @@
 
 #define PID_TUNING_ACCURACY 0.0001
 
-void Twiddle::autoTune(double& rpm, double set, PID& pid, double& correction, void (Motor::*setSpeed)(int), Motor* motor) {
+void Twiddle::autoTune(double& rpm, double set, PID& pid, double& correction, void (Motor::*setSpeed)(int), Motor* motor, Encoders &encoder) {
     
     float best_err = abs(set - rpm);
     float err;
@@ -24,9 +25,12 @@ void Twiddle::autoTune(double& rpm, double set, PID& pid, double& correction, vo
         for (int i = 0; i < 2; i++) {
             *(parameters[i]) += dp[i];
             pid.SetTunings(kp, kd, ki, DIRECT);
-            pid.Compute();
-            (motor->*setSpeed)(correction);
-            
+            for (int i = 0; i < 100; ++i) {
+                pid.Compute();
+                (motor->*setSpeed)(correction);
+                encoder.computeRPM();
+                delay(10);
+            }            
             err = abs(set - rpm);
             Serial.print("error: ");
             Serial.println(err);
@@ -37,8 +41,12 @@ void Twiddle::autoTune(double& rpm, double set, PID& pid, double& correction, vo
             }
             else {
                 *(parameters[i]) += dp[i];
-                pid.Compute();
-                (motor->*setSpeed)(correction);
+                for (int i = 0; i < 100; ++i) {
+                    pid.Compute();
+                    (motor->*setSpeed)(correction);
+                    encoder.computeRPM();
+                    delay(10);
+                }            
                 err = abs(set - rpm);
                 Serial.print("error: ");
                 Serial.println(err);

@@ -133,16 +133,16 @@ void setup()
 	arm.attach(2);
 	arm.write(0);
 
-	// motor.setrightspeed(0);
-	// motor.setleftspeed(0);
-	// Serial.println("left");
-	// Twiddle::autoTune(lrpm, set, pidLeft, pidLeftCorrection, &Motor::setleftspeed, &motor);
-	// motor.setrightspeed(0);
-	// motor.setleftspeed(0);
-	// Serial.println("right");
-	// Twiddle::autoTune(rrpm, set, pidRight, pidRightCorrection, &Motor::setrightspeed, &motor);
-	// motor.setrightspeed(0);
-	// motor.setleftspeed(0);
+	motor.setrightspeed(0);
+	motor.setleftspeed(0);
+	Serial.println("left");
+	Twiddle::autoTune(lrpm, set, pidLeft, pidLeftCorrection, &Motor::setleftspeed, &motor);
+	motor.setrightspeed(0);
+	motor.setleftspeed(0);
+	Serial.println("right");
+	Twiddle::autoTune(rrpm, set, pidRight, pidRightCorrection, &Motor::setrightspeed, &motor);
+	motor.setrightspeed(0);
+	motor.setleftspeed(0);
 
 	//motor.forward();
 }

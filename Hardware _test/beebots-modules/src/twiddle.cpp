@@ -3,6 +3,7 @@
 
 #include <PID_v1.h>
 #include <stdlib.h>
+#include <Arduino.h>
 
 #define PID_TUNING_ACCURACY 0.0001
 

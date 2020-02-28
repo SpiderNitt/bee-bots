@@ -17,7 +17,7 @@
 #define TARGET_RPM 150
 
 bool set_;
-double set = 100, lrpm, rrpm;
+double set = 100;
 int lpos, rpos;
 double pidRightCorrection, pidLeftCorrection;
 volatile unsigned int leftTicks, rightTicks;
@@ -49,13 +49,13 @@ float p_el = 0, p_er = 0;
 float sm_el = 0, sm_er = 0;
 int out_max = 255, out_min = 0;
 
-PID pidRight(&rrpm, &pidRightCorrection, &set, Kpr, Kir, Kdr, DIRECT);
-PID pidLeft(&lrpm, &pidLeftCorrection, &set, Kpl, Kil, Kdl, DIRECT);
 
 void pulseLeft();
 void pulseRight();
 
 Encoders encoders(pulseLeft, pulseRight);
+PID pidRight(&encoders.rrpm, &pidRightCorrection, &set, Kpr, Kir, Kdr, DIRECT);
+PID pidLeft(&encoders.lrpm, &pidLeftCorrection, &set, Kpl, Kil, Kdl, DIRECT);
 void pulseLeft() { encoders.incrementleftticks(); }
 void pulseRight() { encoders.incrementrightticks(); }
 
@@ -136,11 +136,11 @@ void setup()
 	motor.setrightspeed(0);
 	motor.setleftspeed(0);
 	Serial.println("left");
-	Twiddle::autoTune(lrpm, set, pidLeft, pidLeftCorrection, &Motor::setleftspeed, &motor, encoders);
+	Twiddle::autoTune(encoders.lrpm, set, pidLeft, pidLeftCorrection, &Motor::setleftspeed, &motor, encoders);
 	motor.setrightspeed(0);
 	motor.setleftspeed(0);
 	Serial.println("right");
-	Twiddle::autoTune(rrpm, set, pidRight, pidRightCorrection, &Motor::setrightspeed, &motor, encoders);
+	Twiddle::autoTune(encoders.rrpm, set, pidRight, pidRightCorrection, &Motor::setrightspeed, &motor, encoders);
 	motor.setrightspeed(0);
 	motor.setleftspeed(0);
 

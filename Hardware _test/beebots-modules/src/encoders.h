@@ -18,8 +18,8 @@ class Encoders {
     const float TICKS_PER_REV = 3690.0;
     
     public:
-    float lrpm;
-    float rrpm;
+    double lrpm;
+    double rrpm;
     volatile unsigned leftTicks;
     volatile unsigned righTicks;
     Encoders(void (*)(), void (*)());

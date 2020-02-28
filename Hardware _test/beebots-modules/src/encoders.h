@@ -4,8 +4,8 @@
 class Encoders {
     typedef int pin;
 
-    const pin RENC = 21;
-    const pin LENC = 19;
+    const pin RENC = 19;
+    const pin LENC = 21;
 
 #ifdef LEFTMOTOR_A
     const pin &leftencoder = LENC;

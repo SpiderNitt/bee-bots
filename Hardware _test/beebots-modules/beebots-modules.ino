@@ -182,7 +182,11 @@ void printPosition()
 	Serial.print("\t");
 	Serial.print(posY);
 	Serial.print("\t");
-	Serial.println(orientation * 180 / PI);
+	Serial.print(orientation * 180 / PI);
+	Serial.print("\t");
+	Serial.print(encoders.lrpm);
+	Serial.print(",");
+	Serial.println(encoders.rrpm)
 }
 
 void findAngle()

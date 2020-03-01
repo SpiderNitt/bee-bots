@@ -44,14 +44,21 @@ public:
     Direction lpos = STOP;
     Direction rpos = STOP;
 
+    int leftSpeed;
+    int rightSpeed;
+
     Motor();
     void forward();
     void reverse();
     void leftturn();
     void rightturn();
     void brake();
-    void setleftspeed(int);
-    void setrightspeed(int);
+    void setleftspeed(unsigned int);
+    void setrightspeed(unsigned int);
+    void addToLeftSpeed(int l);
+    void addToRightSpeed(int r);
+    unsigned int getLeftVoltage();
+    unsigned int getRightVoltage();
 };
 
 #endif

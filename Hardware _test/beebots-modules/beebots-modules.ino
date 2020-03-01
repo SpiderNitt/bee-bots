@@ -1,10 +1,10 @@
-#include <PID_v1.h>
 #include <Arduino.h>
 #include <Servo.h>
 
 #include "src/motor.h"
 #include "src/encoders.h"
 #include "src/twiddle.h"
+#include "src/PID.h"
 
 #define RADIUS 0.036
 #define LENGTH 0.325
@@ -43,8 +43,8 @@ enum State
 } currentState = IDLE;
 
 /*Control Parameters */
-float Kpl = 1.42, Kil = 0.00, Kdl = 0; ///left
-float Kpr = 1.35, Kir = 0.00, Kdr = 0; //right
+float Kpl =1, Kil = 0.0, Kdl = 0; ///left
+float Kpr = 1, Kir = 0.0, Kdr = 0; //right
 float p_el = 0, p_er = 0;
 float sm_el = 0, sm_er = 0;
 int out_max = 255, out_min = 0;
@@ -54,8 +54,8 @@ void pulseLeft();
 void pulseRight();
 
 Encoders encoders(pulseLeft, pulseRight);
-PID pidRight(&encoders.rrpm, &pidRightCorrection, &set, Kpr, Kir, Kdr, DIRECT);
-PID pidLeft(&encoders.lrpm, &pidLeftCorrection, &set, Kpl, Kil, Kdl, DIRECT);
+PID_ pidRight(&encoders.rrpm, &pidRightCorrection, &set, Kpr, Kir, Kdr);
+PID_ pidLeft(&encoders.lrpm, &pidLeftCorrection, &set, Kpl, Kil, Kdl);
 void pulseLeft() { encoders.incrementleftticks(); }
 void pulseRight() { encoders.incrementrightticks(); }
 
@@ -127,26 +127,29 @@ void setup()
 
 	// configureRightPID();
 
-	pidRight.SetMode(AUTOMATIC);
-	pidLeft.SetMode(AUTOMATIC);
-
 	arm.attach(2);
 	arm.write(0);
 
-	motor.setrightspeed(0);
-	motor.setleftspeed(0);
-	Serial.println("left");
-	Twiddle::autoTune(encoders.lrpm, set, pidLeft, pidLeftCorrection, &Motor::setleftspeed, &motor, encoders);
-	motor.setrightspeed(0);
-	motor.setleftspeed(0);
-	Serial.println("right");
-	Twiddle::autoTune(encoders.rrpm, set, pidRight, pidRightCorrection, &Motor::setrightspeed, &motor, encoders);
-	motor.setrightspeed(0);
-	motor.setleftspeed(0);
+//	motor.setrightspeed(0);
+//	motor.setleftspeed(0);
+//	Serial.println("left");
+//	Twiddle::autoTune(encoders.lrpm, set, pidLeft, pidLeftCorrection, &Motor::addToLeftSpeed, &motor, encoders);
+//	motor.setrightspeed(0);
+//	motor.setleftspeed(0);
+//	Serial.println("right");
+//	Twiddle::autoTune(encoders.rrpm, set, pidRight, pidRightCorrection, &Motor::addToRightSpeed, &motor, encoders);
+//	motor.setrightspeed(0);
+//	motor.setleftspeed(0);
 
 	//motor.forward();
+//  motor.forward();
+//  
+//  motor.setleftspeed(255);
+//  motor.setrightspeed(255);while(1);
+motor.forward();
+while(1);
 }
-
+  
 
 
 void updatePosition()
@@ -176,18 +179,21 @@ void updatePosition()
 
 void printPosition()
 {
-	Serial.print(states[currentState]);
-	Serial.print(":\t");
-	Serial.print(posX);
-	Serial.print("\t");
-	Serial.print(posY);
-	Serial.print("\t");
-	Serial.print(orientation * 180 / PI);
-	Serial.print("\t");
+//	Serial.print(states[currentState]);
+//	Serial.print(":\t");
+//	Serial.print(posX);
+//	Serial.print("\t");
+//	Serial.print(posY);
+//	Serial.print("\t");
+//	Serial.print(orientation * 180 / PI);
+//	Serial.print("\t");
 	Serial.print(encoders.lrpm);
-	Serial.print(",");
-	Serial.println(encoders.rrpm)
+	Serial.print(" ");
+	Serial.print(pidLeftCorrection);
+	Serial.print(" ");
+	Serial.println(motor.getLeftVoltage());
 }
+
 
 void findAngle()
 {
@@ -241,16 +247,23 @@ float distanceToTarget() {
 
 void loop()
 {
+  static unsigned long t = millis();
+  static bool b = false;
+  if (millis() - t > 2000) {
+
+    setTarget(1000, 0, 0);
+  }
+    
   if  (currentState != IDLE) 
   { 
 	pidRight.Compute();
 	pidLeft.Compute();
 
-	pidRightCorrection = round(pidRightCorrection);
-	pidLeftCorrection = round(pidLeftCorrection);
+	pidRightCorrection = -round(pidRightCorrection);
+	pidLeftCorrection = -round(pidLeftCorrection);
 
-    motor.setleftspeed(pidLeftCorrection);
-    motor.setrightspeed(pidRightCorrection);
+    motor.addToLeftSpeed(pidLeftCorrection);
+    motor.addToRightSpeed(pidRightCorrection);
 
 	if (millis() - prevPositionComputeTime > POSITION_COMPUTE_INTERVAL)
 	{
@@ -267,9 +280,9 @@ void loop()
 	{
 	case TURNING_TO_FACE_TARGET:
 
-		Serial.print(orientation);
-		Serial.print("\t");
-		Serial.println(targetOrientation);
+		//Serial.print(orientation);
+		//Serial.print("\t");
+		//Serial.println(targetOrientation);
 
 		if (abs(orientation - targetOrientation) > 0.1)
 		{

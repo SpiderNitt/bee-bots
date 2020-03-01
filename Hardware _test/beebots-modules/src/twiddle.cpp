@@ -2,13 +2,14 @@
 #include "motor.h"
 #include "encoders.h"
 
-#include <PID_v1.h>
 #include <stdlib.h>
 #include <Arduino.h>
 
+#include "PID.h"
+
 #define PID_TUNING_ACCURACY 0.0001
 
-void Twiddle::autoTune(double& rpm, double set, PID& pid, double& correction, void (Motor::*setSpeed)(int), Motor* motor, Encoders &encoder) {
+void Twiddle::autoTune(double& rpm, double set, PID_& pid, double& correction, void (Motor::*setSpeed)(int), Motor* motor, Encoders &encoder) {
     
     float best_err = abs(set - rpm);
     float err;
@@ -24,7 +25,7 @@ void Twiddle::autoTune(double& rpm, double set, PID& pid, double& correction, vo
     while (sum > PID_TUNING_ACCURACY) {
         for (int i = 0; i < 2; i++) {
             *(parameters[i]) += dp[i];
-            pid.SetTunings(kp, kd, ki, DIRECT);
+            pid.SetTunings(kp, kd, ki);
             for (int i = 0; i < 100; ++i) {
                 pid.Compute();
                 (motor->*setSpeed)(correction);
@@ -41,6 +42,7 @@ void Twiddle::autoTune(double& rpm, double set, PID& pid, double& correction, vo
             }
             else {
                 *(parameters[i]) += dp[i];
+                pid.SetTunings(kp, kd, ki);
                 for (int i = 0; i < 100; ++i) {
                     pid.Compute();
                     (motor->*setSpeed)(correction);
@@ -57,6 +59,7 @@ void Twiddle::autoTune(double& rpm, double set, PID& pid, double& correction, vo
                 }
                 else {
                     *(parameters[i]) += dp[i];
+                    pid.SetTunings(kp, kd, ki);
                     dp[i] *= 0.9;
                 }
             }

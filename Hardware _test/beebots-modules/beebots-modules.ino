@@ -147,7 +147,7 @@ void setup()
 //  motor.setleftspeed(255);
 //  motor.setrightspeed(255);while(1);
 motor.forward();
-while(1);
+//while(1);
 }
   
 
@@ -187,11 +187,19 @@ void printPosition()
 //	Serial.print("\t");
 //	Serial.print(orientation * 180 / PI);
 //	Serial.print("\t");
+
+  Serial.print("lrpm- ");
 	Serial.print(encoders.lrpm);
-	Serial.print(" ");
+	Serial.print(" Left correction- ");
 	Serial.print(pidLeftCorrection);
-	Serial.print(" ");
-	Serial.println(motor.getLeftVoltage());
+	Serial.print(" left voltage- ");
+	Serial.print(motor.getLeftVoltage()); 
+  Serial.print("     ||||||   rrpm- ");
+  Serial.print(encoders.rrpm);
+  Serial.print(" Right correction ");
+  Serial.print(pidRightCorrection);
+  Serial.print(" right voltage ");
+  Serial.println(motor.getLeftVoltage());
 }
 
 

@@ -7,7 +7,7 @@ class Encoders {
     const pin RENC = 19;
     const pin LENC = 21;
 
-#ifdef LEFTMOTOR_A
+#ifndef LEFTMOTOR_A
     const pin &leftencoder = LENC;
     const pin &rightencoder = RENC;
 #else

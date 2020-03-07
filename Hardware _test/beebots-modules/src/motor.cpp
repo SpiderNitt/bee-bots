@@ -9,8 +9,6 @@ Motor::Motor()
 
     pinMode(rightdir, OUTPUT);
     pinMode(rightpwm, OUTPUT);
-
-    leftSpeed = rightSpeed = 0;
 }
 
 void Motor::reverse()
@@ -27,8 +25,8 @@ void Motor::forward()
 {
 	lpos = rpos = FRONT;
 	digitalWrite(leftdir, LOW);
-    setleftspeed(255);
-    setrightspeed(255);
+	digitalWrite(leftpwm, HIGH);
+	digitalWrite(rightpwm, HIGH);
 	digitalWrite(rightdir, LOW);
 }
 
@@ -60,39 +58,16 @@ void Motor::brake()
     digitalWrite(leftdir,LOW);
     digitalWrite(rightpwm,LOW);
     digitalWrite(rightdir,LOW);
+
 }
 
 
-void Motor::setleftspeed(unsigned int left)
+void Motor::setleftspeed(int left)
 {
-    leftSpeed = max(255, left);
-    analogWrite(leftpwm,leftSpeed);
+    analogWrite(leftpwm,left);
 }
 
-void Motor::setrightspeed(unsigned int right)
+void Motor::setrightspeed(int right)
 {
-    rightSpeed = max(255, right);
-    analogWrite(rightpwm,rightSpeed);
-}
-
-void Motor::addToLeftSpeed(int l) {
-    leftSpeed += l;
-    if (leftSpeed > 255)
-        leftSpeed = 255;
-    analogWrite(leftpwm,leftSpeed);
-}
-
-void Motor::addToRightSpeed(int r) {
-    rightSpeed += r;
-    if (rightSpeed > 255)
-        rightSpeed = 255;
-    analogWrite(rightpwm,rightSpeed);
-}
-
-unsigned int Motor::getLeftVoltage() {
-    return leftSpeed;
-}
-
-unsigned int Motor::getRightVoltage() {
-    return rightSpeed;
+    analogWrite(rightpwm,right);
 }

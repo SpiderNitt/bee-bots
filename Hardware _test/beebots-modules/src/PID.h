@@ -1,6 +1,7 @@
 #ifndef PID_H
 
 #define PID_H
+#define ERROR_SUM_MAX 2
 
 class PID_ {
     double *current, *correction, *target;

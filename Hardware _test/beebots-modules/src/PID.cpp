@@ -17,6 +17,8 @@ void PID_::SetTunings(float _kp, float _kd, float _ki) {
 void PID_::Compute() {
     double error = (*current) - (*target);
     errorSum += error;
+    if (errorSum > ERROR_SUM_MAX)
+        errorSum = 0;
     float p = kp * (error);
     float d = kd * (error - lastError);
     float i = ki * errorSum;

@@ -65,13 +65,13 @@ void Motor::brake()
 
 void Motor::setleftspeed(unsigned int left)
 {
-    leftSpeed = max(255, left);
+    leftSpeed = min(255, left);
     analogWrite(leftpwm,leftSpeed);
 }
 
 void Motor::setrightspeed(unsigned int right)
 {
-    rightSpeed = max(255, right);
+    rightSpeed = min(255, right);
     analogWrite(rightpwm,rightSpeed);
 }
 

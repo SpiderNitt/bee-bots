@@ -17,7 +17,7 @@
 #define TARGET_RPM 150
 
 bool set_;
-double set = 150;
+double set = 120;
 int lpos, rpos;
 double pidRightCorrection, pidLeftCorrection;
 volatile unsigned int leftTicks, rightTicks;
@@ -42,8 +42,10 @@ enum State
 } currentState = IDLE;
 
 /*Control Parameters */
-float Kpl = 2, Kil = 0.0, Kdl = 0; ///left
-float Kpr = 0, Kir = 0.0, Kdr = 0; //right
+//38.58	34.48	0.00
+//-.22 -.23
+float Kpl = 0.001, Kil = 0.001, Kdl = 0.001; ///left
+float Kpr = 0.001, Kir = 0.001, Kdr = 0.001; //right
 float p_el = 0, p_er = 0;
 float sm_el = 0, sm_er = 0;
 int out_max = 255, out_min = 0;
@@ -138,17 +140,17 @@ void setup()
   arm.attach(2);
   arm.write(0);
 
-  //	motor.setrightspeed(0);
-  //	motor.setleftspeed(0);
-  //	Serial.println("left");
-  //	Twiddle::autoTune(encoders.lrpm, set, pidLeft, pidLeftCorrection, &Motor::addToLeftSpeed, &motor, encoders);
-  //	motor.setrightspeed(0);
-  //	motor.setleftspeed(0);
-  //	Serial.println("right");
-  //	Twiddle::autoTune(encoders.rrpm, set, pidRight, pidRightCorrection, &Motor::addToRightSpeed, &motor, encoders);
-  //	motor.setrightspeed(0);
-  //	motor.setleftspeed(0);
-  //  motor.forward();
+  	motor.setrightspeed(0);
+  	motor.setleftspeed(0);
+  	Serial.println("left");
+  	Twiddle::autoTune(encoders.lrpm, set, pidLeft, pidLeftCorrection, &Motor::addToLeftSpeed, &motor, encoders);
+  	motor.setrightspeed(0);
+  	motor.setleftspeed(0);
+  	Serial.println("right");
+  	Twiddle::autoTune(encoders.rrpm, set, pidRight, pidRightCorrection, &Motor::addToRightSpeed, &motor, encoders);
+  	motor.setrightspeed(0);
+  	motor.setleftspeed(0);
+   motor.forward();
   //  motor.setleftspeed(255);
   //  motor.setrightspeed(255);
 }
@@ -251,7 +253,7 @@ void loop()
   static unsigned long t = millis();
   static bool b = false;
   
-  if  (currentState != IDLE)
+//   if  (currentState != IDLE)
   {
     pidRight.Compute();
     pidLeft.Compute();

@@ -9,7 +9,7 @@
 class Motor {
     //pin definitions
     typedef int pin;
-    
+
     //const pin STBY = 13;
     const pin PWMA = 11;
     const pin AIN2 = 10;
@@ -46,6 +46,8 @@ public:
 
     int leftSpeed;
     int rightSpeed;
+
+    bool stopped;
 
     Motor();
     void forward();

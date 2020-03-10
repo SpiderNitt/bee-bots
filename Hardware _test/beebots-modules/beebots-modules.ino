@@ -133,6 +133,23 @@ void configureLeftPID()
   pidLeft.SetTunings(Kpl, Kdl, Kil);
 }
 
+void pick()
+{
+  arm.write(70);  
+
+  // pick for bot1 - 15
+  // pick for bot2 - 70
+  // pick for bot3 - 
+}
+
+void place()
+{
+  arm.write(20);
+
+  // place for bot1 - 45
+  // place for bot2 - 20
+}
+
 void setup()
 {
   Serial.begin(115200);
@@ -140,24 +157,24 @@ void setup()
 
   // configureRightPID();
 
-  arm.attach(2);
-  arm.write(0);
+  arm.attach(7);
+  //place();
 
-  MPU6050::init();
+  //MPU6050::init();
 
-  // 	motor.setrightspeed(0);
-  // 	motor.setleftspeed(0);
-  // 	Serial.println("left");
-  // 	Twiddle::autoTune(encoders.lrpm, set, pidLeft, pidLeftCorrection, &Motor::addToLeftSpeed, &motor, encoders);
-  // 	motor.setrightspeed(0);
-  // 	motor.setleftspeed(0);
-  // 	Serial.println("right");
-  // 	Twiddle::autoTune(encoders.rrpm, set, pidRight, pidRightCorrection, &Motor::addToRightSpeed, &motor, encoders);
-  // 	motor.setrightspeed(0);
-  // 	motor.setleftspeed(0);
-  //  motor.forward();
-  //  motor.setleftspeed(255);
-  //  motor.setrightspeed(255);
+   	motor.setrightspeed(0);
+   	motor.setleftspeed(0);
+   	Serial.println("left");
+   	Twiddle::autoTune(encoders.lrpm, set, pidLeft, pidLeftCorrection, &Motor::addToLeftSpeed, &motor, encoders);
+   	motor.setrightspeed(0);
+   	motor.setleftspeed(0);
+   	Serial.println("right");
+   	Twiddle::autoTune(encoders.rrpm, set, pidRight, pidRightCorrection, &Motor::addToRightSpeed, &motor, encoders);
+   	motor.setrightspeed(0);
+   	motor.setleftspeed(0);
+    motor.forward();
+    motor.setleftspeed(255);
+    motor.setrightspeed(255);
 }
 
 void updatePosition()
@@ -255,7 +272,7 @@ float distanceToTarget()
 
 void loop()
 {
-  MPU6050::update();
+  //MPU6050::update();
   static unsigned long t = millis();
   static bool b = false;
   
@@ -277,7 +294,7 @@ void loop()
   }
 
   updatePosition();
-  // printPosition();
+  printPosition();
 
   switch (currentState)
   {
@@ -319,11 +336,11 @@ void loop()
         break;
       case '0':
         angle = max(angle - 10, 0);
-        arm.write(angle);
+        pick();
         break;
       case '2':
         angle = min(angle + 10, 180);
-        arm.write(angle);
+        place():
         break;
     }
   }
@@ -346,9 +363,9 @@ void loop()
   //Serial.println(encoders.rrpm );
   //Serial.print("lrpm");
   //Serial.println(encoders.lrpm );
-  Serial.print(MPU6050::kalAngleX);
-  Serial.print("\t");
-  Serial.print(MPU6050::kalAngleY);
-  Serial.print("\n");
+  //Serial.print(MPU6050::kalAngleX);
+  //Serial.print("\t");
+  //Serial.print(MPU6050::kalAngleY);
+  //Serial.print("\n");
   delay(10);
 }

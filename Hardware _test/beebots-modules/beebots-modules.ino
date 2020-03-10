@@ -5,6 +5,7 @@
 #include "src/encoders.h"
 #include "src/twiddle.h"
 #include "src/PID.h"
+#include "src/MPU6050.h"
 
 #define RADIUS 0.036
 #define LENGTH 0.325
@@ -44,8 +45,10 @@ enum State
 /*Control Parameters */
 //38.58	34.48	0.00
 //-.22 -.23
-float Kpl = 0.001, Kil = 0.001, Kdl = 0.001; ///left
-float Kpr = 0.001, Kir = 0.001, Kdr = 0.001; //right
+//float Kpl = 0.001, Kil = 0.001, Kdl = 0.001; ///left
+float Kpl = 0.22, Kil = 0.001, Kdl = 0.23; ///left
+//float Kpr = 0.001, Kir = 0.001, Kdr = 0.001; //right
+float Kpr = 0.22, Kir = 0.001, Kdr = 0.23; //right
 float p_el = 0, p_er = 0;
 float sm_el = 0, sm_er = 0;
 int out_max = 255, out_min = 0;
@@ -132,7 +135,7 @@ void configureLeftPID()
 
 void setup()
 {
-  Serial.begin(9600);
+  Serial.begin(115200);
   float flusher = 3.14;
 
   // configureRightPID();
@@ -140,17 +143,19 @@ void setup()
   arm.attach(2);
   arm.write(0);
 
-  	motor.setrightspeed(0);
-  	motor.setleftspeed(0);
-  	Serial.println("left");
-  	Twiddle::autoTune(encoders.lrpm, set, pidLeft, pidLeftCorrection, &Motor::addToLeftSpeed, &motor, encoders);
-  	motor.setrightspeed(0);
-  	motor.setleftspeed(0);
-  	Serial.println("right");
-  	Twiddle::autoTune(encoders.rrpm, set, pidRight, pidRightCorrection, &Motor::addToRightSpeed, &motor, encoders);
-  	motor.setrightspeed(0);
-  	motor.setleftspeed(0);
-   motor.forward();
+  MPU6050::init();
+
+  // 	motor.setrightspeed(0);
+  // 	motor.setleftspeed(0);
+  // 	Serial.println("left");
+  // 	Twiddle::autoTune(encoders.lrpm, set, pidLeft, pidLeftCorrection, &Motor::addToLeftSpeed, &motor, encoders);
+  // 	motor.setrightspeed(0);
+  // 	motor.setleftspeed(0);
+  // 	Serial.println("right");
+  // 	Twiddle::autoTune(encoders.rrpm, set, pidRight, pidRightCorrection, &Motor::addToRightSpeed, &motor, encoders);
+  // 	motor.setrightspeed(0);
+  // 	motor.setleftspeed(0);
+  //  motor.forward();
   //  motor.setleftspeed(255);
   //  motor.setrightspeed(255);
 }
@@ -250,6 +255,7 @@ float distanceToTarget()
 
 void loop()
 {
+  MPU6050::update();
   static unsigned long t = millis();
   static bool b = false;
   
@@ -271,7 +277,7 @@ void loop()
   }
 
   updatePosition();
-  printPosition();
+  // printPosition();
 
   switch (currentState)
   {
@@ -340,5 +346,9 @@ void loop()
   //Serial.println(encoders.rrpm );
   //Serial.print("lrpm");
   //Serial.println(encoders.lrpm );
+  Serial.print(MPU6050::kalAngleX);
+  Serial.print("\t");
+  Serial.print(MPU6050::kalAngleY);
+  Serial.print("\n");
   delay(10);
 }

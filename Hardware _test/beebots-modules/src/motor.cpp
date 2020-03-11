@@ -11,6 +11,7 @@ Motor::Motor()
     pinMode(rightpwm, OUTPUT);
 
     leftSpeed = rightSpeed = 0;
+    stopped = true;
 }
 
 void Motor::reverse()
@@ -27,59 +28,58 @@ void Motor::forward()
 {
 	lpos = rpos = FRONT;
 	digitalWrite(leftdir, LOW);
-    setleftspeed(255);
-    setrightspeed(255);
 	digitalWrite(rightdir, LOW);
+    stopped = false;
 }
 
 void Motor::leftturn()
 {
     lpos=BACK;
     rpos=FRONT;
-    digitalWrite(leftpwm,HIGH);
     digitalWrite(leftdir,HIGH);
-    digitalWrite(rightpwm,HIGH);
     digitalWrite(rightdir,LOW);
+    stopped = false;
 }
 
 void Motor::rightturn()
 {
     lpos=FRONT;
     rpos=BACK;
-    digitalWrite(leftpwm,HIGH);
     digitalWrite(leftdir,LOW);
-    digitalWrite(rightpwm,HIGH);
     digitalWrite(rightdir,HIGH);
+    stopped = false;
 }
 
 void Motor::brake()
 {
     lpos=STOP;
     rpos=STOP;
-    digitalWrite(leftpwm,LOW);
     digitalWrite(leftdir,LOW);
-    digitalWrite(rightpwm,LOW);
     digitalWrite(rightdir,LOW);
+    stopped = true;
 }
 
 
 void Motor::setleftspeed(unsigned int left)
 {
     leftSpeed = min(255, left);
-    analogWrite(leftpwm,leftSpeed);
+    if (!stopped) analogWrite(leftpwm,leftSpeed);
+    else analogWrite(leftpwm, 0);
 }
 
 void Motor::setrightspeed(unsigned int right)
 {
     rightSpeed = min(255, right);
-    analogWrite(rightpwm,rightSpeed);
+    if (!stopped) analogWrite(rightpwm,rightSpeed);
+    else analogWrite(rightpwm, 0);
 }
 
 void Motor::addToLeftSpeed(int l) {
     leftSpeed += l;
     if (leftSpeed > 255)
         leftSpeed = 255;
-    analogWrite(leftpwm,leftSpeed);
+    if (!stopped) analogWrite(leftpwm,leftSpeed);
+    else analogWrite(leftpwm, 0);
 }
 
 void Motor::addToRightSpeed(int r) {
@@ -87,12 +87,14 @@ void Motor::addToRightSpeed(int r) {
     if (rightSpeed > 255)
         rightSpeed = 255;
     analogWrite(rightpwm,rightSpeed);
+    if (!stopped) analogWrite(rightpwm,rightSpeed);
+    else analogWrite(rightpwm, 0);
 }
 
 unsigned int Motor::getLeftVoltage() {
-    return leftSpeed;
+    return (!stopped) ? leftSpeed: 0;
 }
 
 unsigned int Motor::getRightVoltage() {
-    return rightSpeed;
+    return (!stopped) ? rightSpeed: 0;
 }

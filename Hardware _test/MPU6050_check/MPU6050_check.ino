@@ -167,6 +167,7 @@ void loop() {
   Serial.print("\t");
 #endif
 
+#if 0
   Serial.print(roll); Serial.print("\t");
   Serial.print(gyroXangle); Serial.print("\t");
   Serial.print(compAngleX); Serial.print("\t");
@@ -178,6 +179,7 @@ void loop() {
   Serial.print(gyroYangle); Serial.print("\t");
   Serial.print(compAngleY); Serial.print("\t");
   Serial.print(kalAngleY); Serial.print("\t");
+ #endif
 
 #if 0 // Set to 1 to print the temperature
   Serial.print("\t");
@@ -185,6 +187,12 @@ void loop() {
   double temperature = (double)tempRaw / 340.0 + 36.53;
   Serial.print(temperature); Serial.print("\t");
 #endif
+
+
+Serial.print("kalx:\t");
+Serial.print(kalAngleX);
+Serial.print("\tkaly:\t");
+Serial.print(kalAngleY);
 
   Serial.print("\r\n");
   delay(2);

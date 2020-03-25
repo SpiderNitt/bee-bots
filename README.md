@@ -15,7 +15,8 @@ For instructions on seting it up, head [here](https://github.com/spider-tronix/b
      * Akil M.
      * Amogh.
      * Aditya R.
+     
+![bee-bots Poster](/home/aditya/bee-bots/media/pictures/beebots poster image.png)
 
-https://drive.google.com/open?id=1DRYSFdp2B1RDhzVrKVSVUklw1RZgdNXH
 
 

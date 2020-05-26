@@ -10,7 +10,7 @@ For instructions on seting it up, head [here](https://github.com/spider-tronix/b
 
 * Team:
      * Karthik S.
-     * Praveen Chander.
+     * Praveen Chandhar.
      * Shivani Chander.
      * Akil M.
      * Amogh.

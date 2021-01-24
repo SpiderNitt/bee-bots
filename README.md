@@ -3,6 +3,9 @@
 Swarm and Blockchain based 2-d Constructive System.  
 For instructions on seting it up, head [here](https://github.com/spider-tronix/bee-bots/blob/master/integration/README.md)
 
+Publication :
+https://ieeexplore.ieee.org/document/9108053
+
 * TASKS:
     - [ ] HARDWARE
     - [x] SIMULATION & BLOCKCHAIN
